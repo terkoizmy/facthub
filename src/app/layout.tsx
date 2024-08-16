@@ -1,32 +1,41 @@
-"use client";
+"use client"
 
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { ConvexReactClient } from "convex/react";
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ClerkProvider, useAuth } from "@clerk/clerk-react"
+import { ConvexProviderWithClerk } from "convex/react-clerk"
+import { ConvexReactClient } from "convex/react"
+import { ThemeProvider } from "@/components/theme-provider"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
-// tolong di ubah pake .env stringya 
-const convex = new ConvexReactClient("https://famous-beagle-49.convex.cloud");
+// tolong di ubah pake .env stringya
+const convex = new ConvexReactClient(`${process.env.NEXT_PUBLIC_CONVEX_URL}`)
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-  
   return (
-    // tolong di ubah pake .env stringya 
-    <ClerkProvider publishableKey="pk_test_c3RpcnJlZC1haXJlZGFsZS0zOS5jbGVyay5hY2NvdW50cy5kZXYk">
+    // tolong di ubah pake .env stringya
+    <ClerkProvider
+      publishableKey={`${process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}`}
+    >
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
         <html lang="en">
-          <body className={inter.className}>{children}</body>
+          <body className={inter.className}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </body>
         </html>
       </ConvexProviderWithClerk>
     </ClerkProvider>
-
-      
-  );
+  )
 }
