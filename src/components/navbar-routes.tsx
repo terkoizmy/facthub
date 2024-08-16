@@ -1,18 +1,19 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, SignInButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-
+import { ModeToggle } from "@/components/button-toggle"
+import { Authenticated, Unauthenticated } from "convex/react";
 import { Button } from "@/components/ui/button"
-import { LogOut, Search } from "lucide-react";
+import { LogOut, BookPlus } from "lucide-react";
 import { SearchInput } from "./search-input";
 
 
 export const NavbarRoutes = () => {
   const pathname = usePathname();
 
-  const isTeacherPage = pathname?.startsWith('/teacher');
+  const isTeacherPage = pathname?.startsWith('/post');
   const isCoursePage = pathname?.includes("/courses");
   const isSearchPage = pathname === "/search";
 
@@ -22,8 +23,12 @@ export const NavbarRoutes = () => {
       <div className="hidden md:block">
         <SearchInput />
       </div>
-      
+
       <div className="flex gap-x-2 ml-auto">
+        <div>
+          <ModeToggle />
+        </div>
+
         {isTeacherPage || isCoursePage ? (
           <Link href="/">
             <Button size="sm" variant="ghost">
@@ -33,13 +38,27 @@ export const NavbarRoutes = () => {
           </Link>
           
         ) : (
-          <Link href="/teacher/courses">
+          <Link href="/post/create">
             <Button size="sm" variant="ghost" >
-              + Post
+              <BookPlus className="h-4 w-4 mr-2"  />
+              Post
             </Button>
           </Link>
         )}
-        <UserButton afterSignOutUrl="/" />
+        
+        
+        <Unauthenticated>
+          {/* <SignInButton /> */}
+          <Link href="/sign-in">
+            <Button>
+              Sign In
+            </Button>
+          </Link>
+          
+        </Unauthenticated>
+        <Authenticated>
+          <UserButton  />
+        </Authenticated>
       </div>
     </>
   )
