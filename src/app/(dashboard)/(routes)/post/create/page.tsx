@@ -1,4 +1,6 @@
 "use client";
+
+import * as z from "zod";
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import MarkdownIt from 'markdown-it';
@@ -16,12 +18,20 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export default function CreatePost() {
-  const [content, setContent] = useState({ text: '', html: '' });
+  const [content, setContent] = useState({title: '', text: '', html: '' });
+
+  const handleTitleChange = (e: any) => {
+    setContent({
+      ...content,
+      title: e.target.value
+    })
+  }
 
   // Use useCallback to memoize the handleEditorChange function
   const handleEditorChange = useCallback(({ html, text }: any) => {
-    setContent({ html, text });
+    setContent(prevContent => ({ ...prevContent, html, text }));
   }, []);
+  
 
   function save() {
     console.log('Saving content:', content);
@@ -30,13 +40,9 @@ export default function CreatePost() {
 
   return (
     <div>
-      <div>
-        <Label htmlFor="picture">Thumbnail</Label>
-        <Input id="picture" type="file" />
-      </div>
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <Label htmlFor="title">Title Post</Label>
-        <Input type="email" id="email" placeholder="e.g. 'Japan Lifts Megathrust Earth...' " />
+        <Input type="text" id="title" placeholder="e.g. 'Japan Lifts Megathrust Earth...' " onChange={handleTitleChange} />
       </div>
       <MdEditor 
         style={{ height: '500px' }} 
