@@ -21,6 +21,7 @@ const DashboardLayout = ({
         clerkId: user.id,
         email: user.primaryEmailAddress?.emailAddress || "",
         name: user.fullName || "",
+        imageUrl: user.imageUrl || "",
       });
     }
   }, [user, createUser]);

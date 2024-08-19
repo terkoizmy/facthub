@@ -6,6 +6,7 @@ import { ClerkProvider, useAuth } from "@clerk/clerk-react"
 import { ConvexProviderWithClerk } from "convex/react-clerk"
 import { ConvexReactClient } from "convex/react"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,6 +32,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <Toaster position="top-right" />
               {children}
             </ThemeProvider>
           </body>

@@ -11,8 +11,11 @@ import {
 } from "@/components/ui/card"
 import { EllipsisVertical, ExternalLink } from "lucide-react"
 import Image from "next/image"
+import { useUser, useAuth } from "@clerk/clerk-react";
 
 export default function Home() {
+  const {userId} = useAuth();
+  console.log(userId)
   const tags = ["Javascript", "Typescript", "Nextjs"]
 
   const handleOnClick = () => {
@@ -54,12 +57,12 @@ export default function Home() {
               <div className="flex justify-start text-[0.65rem] gap-2 mt-2">
                 {tags.map((_, index) =>
                   index < 2 ? (
-                    <span className="p-1 rounded-lg px-2 border-[1px] border-black">
+                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black">
                       {`#${_.toLocaleLowerCase()}`}
                     </span>
                   ) : (
                     index === tags.length - 1 && (
-                      <span className="p-1 rounded-lg px-2 border-[1px] border-black">{`+${index - 1}`}</span>
+                      <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black">{`+${index - 1}`}</span>
                     )
                   )
                 )}
