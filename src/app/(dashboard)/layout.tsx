@@ -13,7 +13,7 @@ const DashboardLayout = ({
   children: React.ReactNode;
 }) => {
   const { user } = useUser();
-  const createUser = useMutation(api.createUser.createUser);
+  const createUser = useMutation(api.user.createUser);
 
   useEffect(() => {
     if (user) {

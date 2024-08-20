@@ -9,7 +9,6 @@ import MarkdownIt from 'markdown-it';
 import 'react-markdown-editor-lite/lib/index.css';
 import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -18,15 +17,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { useMutation, useQuery  } from 'convex/react';
 import { api } from '@/../../convex/_generated/api';
 import toast from "react-hot-toast";
-import { redirect } from 'next/navigation';
 
 const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
 });
+
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -39,6 +39,8 @@ const formSchema = z.object({
     text: z.string().min(1, "Content is required"),
     html: z.string(),
   }),
+  tags: z.array(z.string()).min(1, "At least one tag is required"),
+  category: z.string().min(1, "Category is required"),
   image: z
     .custom<FileList>()
     .refine((files) => files?.length == 1, "Image is required.")
@@ -50,6 +52,7 @@ const formSchema = z.object({
 });
 
 export default function CreateNews({ userId }: any) {
+  const [tags, setTags] = useState<string[]>([]);
   const [editorContent, setEditorContent] = useState({ text: '', html: '' });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +62,8 @@ export default function CreateNews({ userId }: any) {
     defaultValues: {
       title: "",
       content: { text: "", html: "" },
+      tags: [],
+      category: "",
     },
   });
 
@@ -82,11 +87,11 @@ export default function CreateNews({ userId }: any) {
 
   const generateUploadUrl = useMutation(api.uploadFile.generateUploadUrl);
   const saveFile = useMutation(api.uploadFile.saveFile);
-  const createNewsArticle = useMutation(api.createNewsArticle.default);
-  const getUser = useMutation(api.getUser.default);
+  const createNewsArticle = useMutation(api.newsArticle.createNewsArticle);
+  const getUser = useMutation(api.user.getUser);
 
   async function getFileUrl(storageId: string) {
-    return `${process.env.CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
+    return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -145,6 +150,8 @@ export default function CreateNews({ userId }: any) {
         htmlContent: values.content.html,
         thumbnailUrl: fileUrl,
         authorId: convexUser._id,
+        tags: values.tags,
+        category: values.category,
       });
   
       console.log('News article posted successfully!');
@@ -205,16 +212,91 @@ export default function CreateNews({ userId }: any) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <div>
+                    <Input
+                      placeholder="Add a tag"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const newTag = e.currentTarget.value.trim();
+                          if (newTag && !tags.includes(newTag)) {
+                            const newTags = [...tags, newTag];
+                            setTags(newTags);
+                            field.onChange(newTags);
+                            e.currentTarget.value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {tags.map((tag, index) => (
+                        <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newTags = tags.filter((_, i) => i !== index);
+                              setTags(newTags);
+                              field.onChange(newTags);
+                            }}
+                            className="ml-2 text-red-500"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="technology">Technology</SelectItem>
+                    <SelectItem value="politics">Politics</SelectItem>
+                    <SelectItem value="science">Science</SelectItem>
+                    <SelectItem value="health">Health</SelectItem>
+                    <SelectItem value="entertainment">Entertainment</SelectItem>
+                    <SelectItem value="sports">sports</SelectItem>
+                    {/* Add more categories as needed */}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
           <FormField
             control={form.control}
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Content</FormLabel>
+                <FormLabel>Werite your Idea</FormLabel>
                 <FormControl>
-                  <MdEditor 
-                    style={{ height: '500px' }} 
+                  <MdEditor
+                    style={{ height: '500px'}} 
                     renderHTML={text => mdParser.render(text)} 
                     onChange={handleEditorChange}
                     // value={editorContent}

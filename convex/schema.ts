@@ -14,6 +14,8 @@ export default defineSchema({
     htmlContent: v.string(),
     thumbnailUrl: v.string(),
     authorId: v.id("users"),
+    tags: v.array(v.string()),
+    category: v.string(),
     createdAt: v.number(),
     updatedAt: v.number(),
     upvotes: v.number(),

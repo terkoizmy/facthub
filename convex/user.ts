@@ -32,3 +32,15 @@ export const createUser = mutation({
     return userId;
   },
 });
+
+export const getUser =  mutation({
+  args: { clerkId: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    if (!args.clerkId) return null;
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+      .first();
+    return user;
+  },
+});
