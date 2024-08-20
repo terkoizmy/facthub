@@ -11,9 +11,8 @@ export default function Home() {
 
   return (
     <main className="flex flex-row gap-5 mx-5 my-5 flex-wrap " >
-      {newsArticle?.map((article, index) => (
-        <NewsCard key={index} author={article.author} title={article.title} 
-        tags={article.tags} category={article.category} thumbnail={article.thumbnailUrl} />
+      {newsArticle?.map((articleNews, index) => (
+          <NewsCard key={index} article={articleNews} />
       ))} 
     </main>
   )
