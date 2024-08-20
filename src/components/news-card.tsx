@@ -38,7 +38,7 @@ export const NewsCard = ({
       <Link href={`/post/${article._id}`} target="_blank">
         <Card
           id="card-article"
-          className="w-[280px] rounded-3xl hover:border-black dark:hover:border-gray-600 hover:cursor-pointer"
+          className="rounded-3xl hover:border-black dark:hover:border-gray-600 hover:cursor-pointer max-h-[350px] h-full relative overflow-hidden"
         >
           <CardHeader className="pb-1 mb-1 px-4">
             <div className="flex justify-between">
@@ -81,13 +81,12 @@ export const NewsCard = ({
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-2 py-0 pb-2 ">
-            <div className="mt-2 mx-0 px-0 relative w-full aspect-video rounded-3xl overflow-hidden ">
+          <CardContent className="px-2 py-0 pb-2 h-[400px] bottom-1 ">
+            <div className="mt-2 mx-0 px-0 relative w-full h-[200px] aspect-video rounded-3xl overflow-hidden  ">
               <Image
                 src={article.thumbnailUrl}
-                width={400}
-                height={200}
                 alt={"dummy alt"}
+                fill
               />
             </div>
           </CardContent>

@@ -1,19 +1,15 @@
-'use client';
-import { useEffect } from "react";
+"use client"
+import { useEffect } from "react"
 
-import { Sidebar } from "./_components/sidebar";
-import { Navbar } from "./_components/navbar";
-import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
+import { Sidebar } from "./_components/sidebar"
+import { Navbar } from "./_components/navbar"
+import { useMutation } from "convex/react"
+import { api } from "../../../convex/_generated/api"
+import { useUser } from "@clerk/clerk-react"
 
-const DashboardLayout = ({
-  children
-}: {
-  children: React.ReactNode;
-}) => {
-  const { user } = useUser();
-  const createUser = useMutation(api.user.createUser);
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useUser()
+  const createUser = useMutation(api.user.createUser)
 
   useEffect(() => {
     if (user) {
@@ -22,23 +18,20 @@ const DashboardLayout = ({
         email: user.primaryEmailAddress?.emailAddress || "",
         name: user.fullName || "",
         imageUrl: user.imageUrl || "",
-      });
+      })
     }
-  }, [user, createUser]);
+  }, [user, createUser])
   return (
     <div className="h-full">
       <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">
         <Navbar />
       </div>
       <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
-        <Sidebar/>
+        <Sidebar />
       </div>
-      <main className="md:pl-56 pt-[80px] h-full">
-        {children}
-      </main>
-      
+      <main className="md:pl-56 pt-[80px] h-full">{children}</main>
     </div>
-  );
+  )
 }
- 
-export default DashboardLayout;
+
+export default DashboardLayout
