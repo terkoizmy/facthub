@@ -20,26 +20,26 @@ export default defineSchema({
     updatedAt: v.number(),
     upvotes: v.number(),
     downvotes: v.number(),
-  }),
+  }).index('authorId', ['authorId']),
   comments: defineTable({
     articleId: v.id("newsArticles"),
     authorId: v.id("users"),
     content: v.string(),
     createdAt: v.number(),
+    parentId: v.union(v.id("comments"), v.null()), // Allows for replies to comments
   }),
   votes: defineTable({
     articleId: v.id("newsArticles"),
     userId: v.id("users"),
     voteType: v.union(v.literal("upvote"), v.literal("downvote")),
   }),
-  fileUploads: defineTable({
-    name: v.string(),
-    totalChunks: v.number(),
-    receivedChunks: v.number(),
-    chunks: v.array(v.array(v.number())),
-  }),
   images: defineTable({
     storageId: v.string(),
     prompt: v.string(),
+  }),
+  follows: defineTable({
+    followerId: v.id("users"), 
+    followedId: v.id("users"), 
+    createdAt: v.number(),     
   }),
 });

@@ -9,6 +9,7 @@ import { useEffect } from "react";
 export default function CreatePost() {
   const { user } = useUser();
   
+  // @ts-ignore
   const getUser = useMutation(api.getUser.default);
   // const {userId} = useAuth();
   console.log(user)

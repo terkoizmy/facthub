@@ -35,7 +35,7 @@ export const NewsCard = ({
   }
   return (
     <>
-      <Link href={`/post/${article._id}`} target="_blank">
+      <Link href={`/article/${article._id}`} target="_blank">
         <Card
           id="card-article"
           className="rounded-3xl hover:border-black dark:hover:border-gray-600 hover:cursor-pointer max-h-[350px] h-full relative overflow-hidden"

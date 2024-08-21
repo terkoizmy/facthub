@@ -28,7 +28,14 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
 });
 
 
-const mdParser = new MarkdownIt(/* Markdown-it options */);
+const mdParser = new MarkdownIt({
+  html:         true,
+  xhtmlOut:     true,
+  breaks:       true,
+  highlight: function (/*str, lang*/) { return ''; }
+})
+.enable(['link'])
+.enable('image');;
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];

@@ -59,37 +59,26 @@ export const getArticlesWithAuthors = query({
   },
 });
 
-// export const getArticle = query({
-//   args: {
-//     limit: v.optional(v.number()),
-//     skip: v.optional(v.number()),
-//   },
-//   handler: async (ctx, args) => {
-//     const { db } = ctx;
-//     const { id } = args;
+export const getArticleWithAuthor = query({
+  args: {
+    articleId: v.id("newsArticles"),
+  },
+  handler: async (ctx, args) => {
+    const { db } = ctx;
+    const { articleId } = args;
 
-//     // Fetch articles
-//     const articles = await db.query("newsArticles")
-//       .order("desc")
-//       .take(skip + limit);
+    const article = await db.get(articleId);
 
-//     // Fetch author data for each article
-//     const articlesWithAuthors = await Promise.all(
-//       articles.slice(skip).map(async (article) => {
-//         const author = await db.get(article.authorId);
-//         return {
-//           ...article,
-//           author: author ? {
-//             id: author._id,
-//             name: author.name,
-//             email: author.email,
-//             imageUrl: author.imageUrl,
-//           } : null,
-//         };
-//       })
-//     );
+    if (!article) {
+      return { article: null };
+    }
 
-//     return articlesWithAuthors;
-//   },
-// });
+    const author = await db.get(article.authorId);
+
+    return {
+      ...article,
+      author
+    };
+  },
+});
 

@@ -37,7 +37,7 @@ export const NavbarRoutes = () => {
           </Link>
           
         ) : (
-          <Link href="/post/create">
+          <Link href="/article/create">
             <Button size="sm" variant="ghost" >
               <BookPlus className="h-4 w-4 mr-2"  />
               Post
