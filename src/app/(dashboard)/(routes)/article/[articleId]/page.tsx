@@ -10,12 +10,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { CardContent } from "@/components/ui/card";
+import { Doc } from "@/../convex/_generated/dataModel";
+
+interface Author extends Doc<"users"> {
+}
+
+interface NewsArticle extends Doc<"newsArticles"> {
+  author: Author;
+}
 
 export default function PostArticle()  {
   const { articleId } = useParams()
 
   // @ts-ignore
-  const newsArticle = useQuery(api.newsArticle.getArticleWithAuthor, { articleId })
+  const newsArticle = useQuery(api.newsArticle.getArticleWithAuthor, { articleId }) as NewsArticle | undefined;
   // console.log(articleId)
   console.log(newsArticle)
 
@@ -36,7 +44,7 @@ export default function PostArticle()  {
         <Card>
           <div className="flex items-center space-x-4 mx-4 my-4 ">
             <Avatar className="w-8 h-8">
-              <AvatarImage src={newsArticle?.author?.imageUrl} />
+              <AvatarImage src={newsArticle?.author!.imageUrl} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div>
