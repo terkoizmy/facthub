@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
+// @ts-ignore
 import MarkdownIt from 'markdown-it';
 import 'react-markdown-editor-lite/lib/index.css';
 import { useState, useCallback, useRef } from 'react';
