@@ -33,8 +33,7 @@ export default function PostArticle()  {
   }
 
   return (
-    <main className="flex flex-col items-center justify-between max-w-3xl mx-auto py-10">
-
+    <main className="flex flex-col justify-center gap-3 p-5 ">
         <ArticleSection article={newsArticle} />
         <CommentSection />
     </main>

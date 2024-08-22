@@ -301,10 +301,10 @@ export default function CreateNews({ userId }: any) {
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Werite your Idea</FormLabel>
+                <FormLabel>Werite your article</FormLabel>
                 <FormControl>
                   <MdEditor
-                    style={{ height: '500px'}} 
+                    style={{ height: '550px'}} 
                     renderHTML={text => mdParser.render(text)} 
                     onChange={handleEditorChange}
                     // value={editorContent}

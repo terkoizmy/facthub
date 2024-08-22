@@ -77,7 +77,7 @@ export default function CommentSection({ articleId }: any) {
       <h2 className="text-2xl font-bold mb-4">Comments</h2>
       <Card>
         <div className="flex items-center space-x-4 mb-4">
-          <Avatar className="w-8 h-8">
+          <Avatar className="w-10 h-10 ">
             {/* <AvatarImage src={comment?.author?.name} /> */}
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
