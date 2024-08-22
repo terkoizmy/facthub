@@ -95,5 +95,3 @@ export default function CommentSection({ articleId }: any) {
     </div>
   );
 }
-
-

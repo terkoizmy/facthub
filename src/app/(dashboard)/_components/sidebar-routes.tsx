@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Layout, List, BarChart } from "lucide-react";
+import { Layout, List, BarChart, CircleUserRound  } from "lucide-react";
 import { SidebarItem } from "./sidebar-item";
 import { usePathname } from "next/navigation";
 

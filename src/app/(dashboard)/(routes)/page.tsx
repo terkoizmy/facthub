@@ -1,22 +1,46 @@
 "use client"
 
 import { NewsCard } from "@/components/news-card"
-import { useQuery } from "convex/react"
+import { usePaginatedQuery } from "convex/react"
 import { api } from "@/../../convex/_generated/api"
+import { useState, useEffect, useCallback } from "react"
 
 export default function Home() {
-  const newsArticle = useQuery(api.newsArticle.getArticlesWithAuthors, {
-    limit: 10,
-    skip: 0,
-  })
+  const [allArticles, setAllArticles] = useState([]);
 
-  console.log(newsArticle)
+  const { results, status, loadMore } = usePaginatedQuery(
+    // @ts-ignore
+    api.newsArticle.getArticlesWithAuthors,
+    {},
+    { 
+      initialNumItems: 10,
+      keepAlive: true
+    }
+  );
+
+  useEffect(() => {
+    if (results) {
+      setAllArticles(prev => [...results] as any);
+    }
+  }, [results]);
+
+  const handleScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || status !== "CanLoadMore") return;
+    loadMore(5);
+  }, [status, loadMore]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   return (
     <main className="custom-grid w-full p-4" >
-      {newsArticle?.map((articleNews, index) => (
-          <NewsCard key={index} article={articleNews} />
-      ))} 
+      {allArticles.map((articleNews, index) => (
+        // @ts-ignore
+        <NewsCard key={articleNews._id || index} article={articleNews} />
+      ))}
+      {status === "LoadingMore" && <div>Loading more...</div>}
     </main>
   )
 }

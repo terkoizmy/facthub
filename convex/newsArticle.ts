@@ -2,6 +2,8 @@ import { mutation } from "./_generated/server.js";
 import { query } from "./_generated/server";
 // import { mutationGeneric } from "convex/server";
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
+
 
 export const createNewsArticle = mutation({
   args: {
@@ -27,35 +29,33 @@ export const createNewsArticle = mutation({
 
 export const getArticlesWithAuthors = query({
   args: {
-    limit: v.optional(v.number()),
-    skip: v.optional(v.number()),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const { db } = ctx;
-    const { limit = 10, skip = 0 } = args;
 
     // Fetch articles
-    const articles = await db.query("newsArticles")
+
+    console.log("FATCHING DATA")
+    const paginatedArticles = await db.query("newsArticles")
       .order("desc")
-      .take(skip + limit);
+      .paginate(args.paginationOpts);
 
     // Fetch author data for each article
     const articlesWithAuthors = await Promise.all(
-      articles.slice(skip).map(async (article) => {
+      paginatedArticles.page.map(async (article) => {
         const author = await db.get(article.authorId);
         return {
           ...article,
-          author: author ? {
-            id: author._id,
-            name: author.name,
-            email: author.email,
-            imageUrl: author.imageUrl,
-          } : null,
+          author: author,
         };
       })
     );
 
-    return articlesWithAuthors;
+    return {
+      page: articlesWithAuthors,
+      continueCursor: paginatedArticles.continueCursor,
+    };
   },
 });
 

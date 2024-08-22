@@ -9,11 +9,6 @@ import { useEffect } from "react";
 export default function CreatePost() {
   const { user } = useUser();
   
-  // @ts-ignore
-  const getUser = useMutation(api.getUser.default);
-  // const {userId} = useAuth();
-  console.log(user)
-  
   return (
     <div className="mx-5 my-5">
       <CreateNews userId={user?.id} />
