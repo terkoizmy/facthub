@@ -55,13 +55,12 @@ export const NavbarRoutes = () => {
         )}
         
         <Unauthenticated>
-          {/* <SignInButton /> */}
-          <Link href="/sign-in">
+          <SignInButton />
+          {/* <Link href="/sign-in">
             <Button>
               Sign In
             </Button>
-          </Link>
-          
+          </Link> */}
         </Unauthenticated>
         <Authenticated>
           <UserButton >
@@ -69,7 +68,7 @@ export const NavbarRoutes = () => {
               <UserButton.Action
                 label="Profile"
                 labelIcon={<DotIcon />}
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push('/profile/Me')}
               />
             </UserButton.MenuItems>
           </UserButton>

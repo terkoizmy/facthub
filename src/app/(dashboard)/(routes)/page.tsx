@@ -17,6 +17,7 @@ export default function Home() {
       keepAlive: true
     }
   );
+  console.log(status)
 
   useEffect(() => {
     if (results) {

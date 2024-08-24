@@ -4,12 +4,14 @@ import { useEffect } from "react"
 import { Sidebar } from "./_components/sidebar"
 import { Navbar } from "./_components/navbar"
 import { useMutation } from "convex/react"
-import { api } from "../../../convex/_generated/api"
+import { api } from "@/../convex/_generated/api"
 import { useUser } from "@clerk/clerk-react"
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUser()
   const createUser = useMutation(api.user.createUser)
+
+  // console.log(user)
 
   useEffect(() => {
     if (user) {
