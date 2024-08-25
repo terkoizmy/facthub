@@ -17,9 +17,8 @@ interface NewsArticle extends Doc<"newsArticles"> {
 
 export default function PostArticle()  {
   const { articleId } = useParams() ; 
-
   // @ts-ignore
-  const newsArticle = useQuery(api.newsArticle.getArticleWithAuthor, { articleId }) as NewsArticle | undefined;
+  const newsArticle = useQuery(api.newsArticle.getArticleWithAuthor, { articleId }) as NewsArticle | undefined;  
   
   if (!newsArticle) {
     return (

@@ -17,3 +17,20 @@ export const saveFile = mutation({
     return args.storageId;
   },
 });
+
+export const deleteImageFromStorage = mutation({
+  args: {
+    storageId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { storageId } = args;
+
+    try {
+      await ctx.storage.delete(storageId);
+      return { success: true, message: "Image deleted successfully" };
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+      return { success: false, message: "Failed to delete image" };
+    }
+  },
+});

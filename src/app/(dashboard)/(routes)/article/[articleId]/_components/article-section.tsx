@@ -70,6 +70,7 @@ export default function ArticleSection( { article } : ArticleSectionProps)  {
               src={article?.thumbnailUrl}
               alt={"dummy alt"}
               fill
+              className="object-contain"
             />
           </div>
         </CardContent>

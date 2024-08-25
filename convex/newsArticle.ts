@@ -4,6 +4,26 @@ import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 
+export const getArticle = query({
+  args: {
+    articleId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { db } = ctx;
+    if (!args.articleId) {
+      throw new Error("Article not found in database");
+    }
+
+    const article = await db
+    .query("newsArticles")
+    .filter((q) => q.eq(q.field("_id"), args.articleId))
+    .unique()
+
+    return {
+      ...article
+    }
+  },
+})
 
 export const createNewsArticle = mutation({
   args: {
@@ -82,3 +102,40 @@ export const getArticleWithAuthor = query({
   },
 });
 
+export const editArticle = mutation({
+  args: {
+    articleId: v.id("newsArticles"),
+    clerkId: v.string(),
+    // @ts-ignore
+    articleData: v.object({
+      title: v.string(),
+      content: v.string(),
+      htmlContent: v.string(),
+      thumbnailUrl: v.string(),
+      authorId: v.id("users"),
+      tags: v.array(v.string()),
+      category: v.string(),
+    })  ,
+  },
+  handler: async (ctx, args) => {
+    const { db } = ctx
+    const { articleId, clerkId, articleData } = args
+
+    const checkUser = await db
+    .query("users")
+    .filter((q) => q.eq(q.field("clerkId"), clerkId))
+    .unique();
+
+    if(checkUser?._id != articleData.authorId){
+      throw new Error("You are not the author on this article");
+    }
+    
+    const updateArticle = await db.patch(articleId, {
+      ...articleData
+    })
+
+    return {
+      msg: "Article success update"
+    } 
+  },
+})
