@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import MarkdownIt from 'markdown-it';
 import 'react-markdown-editor-lite/lib/index.css';
 import { useState, useCallback, useRef } from 'react';
+import { useRouter } from "next/router";
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -60,6 +61,7 @@ const formSchema = z.object({
 });
 
 export default function CreateNews({ userId }: any) {
+  const router = useRouter()
   const [tags, setTags] = useState<string[]>([]);
   const [editorContent, setEditorContent] = useState({ text: '', html: '' });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -152,7 +154,7 @@ export default function CreateNews({ userId }: any) {
         throw new Error("User not found in Convex database");
       }
       
-      await createNewsArticle({
+      const newArticle = await createNewsArticle({
         title: values.title,
         content: values.content.text,
         htmlContent: values.content.html,
@@ -166,6 +168,10 @@ export default function CreateNews({ userId }: any) {
       toast.success('Successfully Created News Article', {
         id: toastId,
       });
+
+      console.log(newArticle)
+
+      // router.push(`/article/${newArticle._id}`)
       
       // Reset form or navigate to another page
     } catch (err) {

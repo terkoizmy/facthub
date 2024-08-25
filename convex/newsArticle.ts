@@ -115,7 +115,7 @@ export const editArticle = mutation({
       authorId: v.id("users"),
       tags: v.array(v.string()),
       category: v.string(),
-    })  ,
+    }) ,
   },
   handler: async (ctx, args) => {
     const { db } = ctx
@@ -136,6 +136,33 @@ export const editArticle = mutation({
 
     return {
       msg: "Article success update"
+    } 
+  },
+})
+
+export const deleteArticle = mutation({
+  args: {
+    articleId: v.id("newsArticles"),
+    clerkId: v.string(),
+    authorId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const { db } = ctx
+    const { articleId, clerkId, authorId } = args
+
+    const checkUser = await db
+    .query("users")
+    .filter((q) => q.eq(q.field("clerkId"), clerkId))
+    .unique();
+
+    if(checkUser?._id != authorId){
+      throw new Error("You are not the author on this article");
+    }
+    
+    await db.delete(articleId)
+
+    return {
+      msg: "Article success delete"
     } 
   },
 })

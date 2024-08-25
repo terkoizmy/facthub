@@ -5,10 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
 // @ts-ignore
 import MarkdownIt from 'markdown-it';
 import 'react-markdown-editor-lite/lib/index.css';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -18,6 +19,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { useMutation, useQuery  } from 'convex/react';
@@ -28,7 +40,6 @@ import { Doc } from "@/../convex/_generated/dataModel";
 const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
 });
-
 
 const mdParser = new MarkdownIt({
   html:         true,
@@ -69,6 +80,7 @@ interface editNewsProps {
 
 export default function EditNews({ userId, article }: editNewsProps) {
   // console.log(article)
+  const router = useRouter()
   const [tags, setTags] = useState<string[]>(article.tags || []);
   const [editorContent, setEditorContent] = useState({ text: article.content, html: article.htmlContent });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -108,9 +120,29 @@ export default function EditNews({ userId, article }: editNewsProps) {
   const getUser = useMutation(api.user.getUser);
   const updateNewsArticle = useMutation(api.newsArticle.editArticle)
   const deleteImageStorage = useMutation(api.uploadFile.deleteImageFromStorage)
+  const deleteArticle = useMutation(api.newsArticle.deleteArticle)
 
   async function getFileUrl(storageId: string) {
     return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
+  }
+
+  const onDelete = async (userId: string, article: Doc<"newsArticles">) => {
+    try {
+      const toastId = toast.loading('Loading...');
+      
+      await deleteArticle({
+        articleId: article._id,
+        clerkId: userId,
+        authorId: article.authorId,
+      })
+
+      toast.success('Successfully delete news article', {
+        id: toastId,
+      });
+      router.push(`/`)
+    } catch (error) {
+      
+    }
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -166,15 +198,11 @@ export default function EditNews({ userId, article }: editNewsProps) {
         console.log("fileUrl:", fileUrl);
         fileUrls = fileUrl
       }
-
-      console.log(fileUrls)
       
       // Create news article
       toast.loading('Update News', {
         id: toastId,
       });
-
-      console.log("Upload berhasil")
 
       const convexUser = await getUser({ clerkId:  userId});
       if (!convexUser) {
@@ -196,10 +224,12 @@ export default function EditNews({ userId, article }: editNewsProps) {
         
       });
   
-      console.log('News article posted successfully!');
+      console.log('News article edited successfully!');
       toast.success('Successfully Edit News Article', {
         id: toastId,
       });
+
+      router.push(`/article/${article._id}`)
       
       // Reset form or navigate to another page
     } catch (err) {
@@ -211,6 +241,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
 
   return (
     <div className="mx-5 my-5">
+      <Dialog>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Image field */}
@@ -260,53 +291,69 @@ export default function EditNews({ userId, article }: editNewsProps) {
             )}
           />
 
-          {/* Tags field */}
           <FormField
             control={form.control}
             name="tags"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tags</FormLabel>
-                <FormControl>
-                  <div>
-                    <Input
-                      placeholder="Add a tag"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          const newTag = e.currentTarget.value.trim();
-                          if (newTag && !tags.includes(newTag)) {
-                            const newTags = [...tags, newTag];
-                            setTags(newTags);
-                            field.onChange(newTags);
-                            e.currentTarget.value = '';
-                          }
-                        }
-                      }}
-                    />
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {tags.map((tag, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newTags = tags.filter((_, i) => i !== index);
-                              setTags(newTags);
-                              field.onChange(newTags);
-                            }}
-                            className="ml-2 text-red-500"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+            render={({ field }) => {
+              const addTag = (inputElement: HTMLInputElement) => {
+                const newTag = inputElement.value.trim();
+                if (newTag && !tags.includes(newTag)) {
+                  const newTags = [...tags, newTag];
+                  setTags(newTags);
+                  field.onChange(newTags);
+                  inputElement.value = '';
+                }
+              };
+
+              return (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Add a tag"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addTag(e.currentTarget);
+                            }
+                          }}
+                        />
+                        <Button 
+                          type="button" 
+                          onClick={() => {
+                            const input = document.querySelector('input[placeholder="Add a tag"]') as HTMLInputElement;
+                            if (input) addTag(input);
+                          }}
+                        >
+                          Add Tag
+                        </Button>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {tags.map((tag, index) => (
+                          <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newTags = tags.filter((_, i) => i !== index);
+                                setTags(newTags);
+                                field.onChange(newTags);
+                              }}
+                              className="ml-2 text-red-500"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           {/* Category field */}
@@ -358,10 +405,31 @@ export default function EditNews({ userId, article }: editNewsProps) {
           
           <div className="flex justify-between">
             <Button type="submit">Update</Button>
-            <Button variant="destructive" >Delete</Button>
+            <DialogTrigger asChild>
+              <Button variant="destructive">Delete</Button>
+            </DialogTrigger>
           </div>
         </form>
       </Form>
+      
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure want delete this article?</DialogTitle>
+            <DialogDescription>
+              This article will be delete permanently. you can't restore this article anymore
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-center items-center">
+            <Button variant="destructive" onClick={()=> {onDelete(userId, article)}}>Delete</Button>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
+          </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
