@@ -7,6 +7,8 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     imageUrl: v.string(),
+    bio: v.optional(v.string()), 
+    joinedAt: v.number(), 
   }),
   newsArticles: defineTable({
     title: v.string(),
@@ -20,6 +22,7 @@ export default defineSchema({
     updatedAt: v.number(),
     upvotes: v.number(),
     downvotes: v.number(),
+    viewCount: v.number(), 
   }).index('authorId', ['authorId']),
   comments: defineTable({
     articleId: v.id("newsArticles"),
@@ -42,4 +45,9 @@ export default defineSchema({
     followedId: v.id("users"), 
     createdAt: v.number(),     
   }),
+  bookmarks: defineTable({ // New table
+    userId: v.id("users"),
+    articleId: v.id("newsArticles"),
+    createdAt: v.number(),
+  }).index('userId', ['userId']),
 });

@@ -8,6 +8,7 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { Button } from "@/components/ui/button"
 import { LogOut, BookPlus } from "lucide-react";
 import { SearchInput } from "./search-input";
+import { useUser } from "@clerk/nextjs";
 
 
 const DotIcon = () => {
@@ -21,6 +22,7 @@ const DotIcon = () => {
 export const NavbarRoutes = () => {
   const pathname = usePathname();
   const router = useRouter()
+  const { user } = useUser()
 
   const isCreateArrticlePage = pathname?.startsWith('/article');
   // const isCoursePage = pathname?.includes("/create");
@@ -37,25 +39,36 @@ export const NavbarRoutes = () => {
           <ModeToggle />
         </div>
 
-        {isCreateArrticlePage  ? (
-          <Link href="/">
-            <Button size="sm" variant="ghost">
-              <LogOut className="h-4 w-4 mr-2"  />
-              Exit
-            </Button> 
-          </Link>
+        {user && (
+          <>
+          {isCreateArrticlePage  ? (
+            <Link href="/">
+              <Button size="sm" variant="ghost">
+                <LogOut className="h-4 w-4 mr-2"  />
+                Exit
+              </Button> 
+            </Link>
+            
+          ) : (
+            <Link href="/article/create">
+              <Button size="sm" variant="ghost" >
+                <BookPlus className="h-4 w-4 mr-2"  />
+                Post
+              </Button>
+            </Link>
+          )}
+          </>
+        )
           
-        ) : (
-          <Link href="/article/create">
-            <Button size="sm" variant="ghost" >
-              <BookPlus className="h-4 w-4 mr-2"  />
-              Post
-            </Button>
-          </Link>
-        )}
+        }
+
+        
         
         <Unauthenticated>
-          <SignInButton />
+          <Button size="sm" variant="ghost" >
+            <SignInButton  />
+          </Button>
+          
           {/* <Link href="/sign-in">
             <Button>
               Sign In

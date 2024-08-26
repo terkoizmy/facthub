@@ -42,6 +42,7 @@ export const createNewsArticle = mutation({
       updatedAt: Date.now(),
       upvotes: 0,
       downvotes: 0,
+      viewCount: 0,
     });
     return newsArticleId;
   },

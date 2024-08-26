@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { EllipsisVertical, ExternalLink } from "lucide-react"
+import { BookmarkPlus, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -57,8 +57,8 @@ export const NewsCard = ({
                   className="h-8 px-2 rounded-xl bg-black dark:bg-white"
                   onClick={handleOnClick}
                 >
-                  Follow
-                  <ExternalLink className="w-5 h-5 ml-2" />
+                  <BookmarkPlus className="w-5 h-5 mr-1" />
+                  Bookmark
                 </Button>
               </div>
             </div>
@@ -82,7 +82,7 @@ export const NewsCard = ({
             </CardTitle>
           </CardHeader>
           <CardContent className="px-2 py-0 pb-2 h-[400px] ">
-            <div className="mt-2 mx-0 px-0 relative w-full aspect-video rounded-md overflow-hidden ">
+            <div className="mt-2 mx-0 px-0 relative  h-[200px] w-full aspect-video rounded-md overflow-hidden ">
               <Image
                 src={article.thumbnailUrl}
                 alt={"dummy alt"}

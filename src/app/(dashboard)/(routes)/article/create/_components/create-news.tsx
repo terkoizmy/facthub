@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import MarkdownIt from 'markdown-it';
 import 'react-markdown-editor-lite/lib/index.css';
 import { useState, useCallback, useRef } from 'react';
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -108,6 +108,11 @@ export default function CreateNews({ userId }: any) {
     console.log('Saving content:', values);
     
     try {
+      const convexUser = await getUser({ clerkId: userId });
+      if (!convexUser) {
+        throw new Error("User not found in Convex database");
+      }
+
       const toastId = toast.loading('Loading...');
       // Upload image
       const file = values.image[0];
@@ -148,11 +153,6 @@ export default function CreateNews({ userId }: any) {
       });
 
       console.log("Upload berhasil")
-
-      const convexUser = await getUser({ clerkId: userId });
-      if (!convexUser) {
-        throw new Error("User not found in Convex database");
-      }
       
       const newArticle = await createNewsArticle({
         title: values.title,
@@ -171,7 +171,7 @@ export default function CreateNews({ userId }: any) {
 
       console.log(newArticle)
 
-      // router.push(`/article/${newArticle._id}`)
+      router.push(`/article/${newArticle}`)
       
       // Reset form or navigate to another page
     } catch (err) {
@@ -227,52 +227,69 @@ export default function CreateNews({ userId }: any) {
             )}
           />
 
-          <FormField
+<FormField
             control={form.control}
             name="tags"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tags</FormLabel>
-                <FormControl>
-                  <div>
-                    <Input
-                      placeholder="Add a tag"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          const newTag = e.currentTarget.value.trim();
-                          if (newTag && !tags.includes(newTag)) {
-                            const newTags = [...tags, newTag];
-                            setTags(newTags);
-                            field.onChange(newTags);
-                            e.currentTarget.value = '';
-                          }
-                        }
-                      }}
-                    />
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {tags.map((tag, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newTags = tags.filter((_, i) => i !== index);
-                              setTags(newTags);
-                              field.onChange(newTags);
-                            }}
-                            className="ml-2 text-red-500"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+            render={({ field }) => {
+              const addTag = (inputElement: HTMLInputElement) => {
+                const newTag = inputElement.value.trim();
+                if (newTag && !tags.includes(newTag)) {
+                  const newTags = [...tags, newTag];
+                  setTags(newTags);
+                  field.onChange(newTags);
+                  inputElement.value = '';
+                }
+              };
+
+              return (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Add a tag"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addTag(e.currentTarget);
+                            }
+                          }}
+                        />
+                        <Button 
+                          type="button" 
+                          onClick={() => {
+                            const input = document.querySelector('input[placeholder="Add a tag"]') as HTMLInputElement;
+                            if (input) addTag(input);
+                          }}
+                        >
+                          Add Tag
+                        </Button>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {tags.map((tag, index) => (
+                          <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newTags = tags.filter((_, i) => i !== index);
+                                setTags(newTags);
+                                field.onChange(newTags);
+                              }}
+                              className="ml-2 text-red-500"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <FormField

@@ -8,28 +8,18 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage () {
   const { user } = useUser()
-  // const getProfile = useQuery(api.user.getProfile);
-  // const [convexUser, setConvexUser] = useState(null)
-  
-  // useEffect(  () =>  {
+  // const [convexUser, setConvexUser] = useState({})
+  const userProfile = useQuery(api.user.getProfile,{ clerkId: user?.id });
 
-  //   const fetchUser = async () => {
-  //     const userProfile = await getProfile({ clerkId: user?.id });
-  //     setConvexUser(userProfile)
-  //   }
 
-  //   fetchUser()
-
-  // }, [user, getUser])
-
-  // console.log(getUser)
+  console.log(userProfile)
 
   return (
-    <div className="h-full flex flex-col items-center justify-center">
-      <div>
+    <div className="h-full w-full flex flex-row items-center ">
+      <div className="flex h-auto bg-slate-500 w-7/12">
         profile header
       </div>
-      <div>
+      <div className="flex h-auto bg-red-400 w-5/12 ">
         posting article user profile
       </div>
     </div>

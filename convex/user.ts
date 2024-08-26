@@ -28,6 +28,8 @@ export const createUser = mutation({
       name: args.name,
       email: args.email,
       imageUrl: args.imageUrl,
+      bio: "", 
+    joinedAt: Date.now(), 
     });
     
     return userId;
