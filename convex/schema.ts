@@ -44,7 +44,7 @@ export default defineSchema({
     followerId: v.id("users"), 
     followedId: v.id("users"), 
     createdAt: v.number(),     
-  }),
+  }).index('userId', ['followerId', 'followedId']),
   bookmarks: defineTable({ // New table
     userId: v.id("users"),
     articleId: v.id("newsArticles"),

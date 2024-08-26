@@ -36,7 +36,7 @@ export const createUser = mutation({
   },
 });
 
-export const getUser =  mutation({
+export const getUser =  query({
   args: { clerkId: v.optional(v.string()) },
   handler: async (ctx, args) => {
     if (!args.clerkId) return null;

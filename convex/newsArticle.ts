@@ -25,6 +25,19 @@ export const getArticle = query({
   },
 })
 
+// Get user's articles
+const getUserArticles = query({
+  args: { userId: v.id("users"), limit: v.number() },
+  handler: async (ctx, args) => {
+    const articles = await ctx.db
+      .query("newsArticles")
+      .withIndex("authorId", (q) => q.eq("authorId", args.userId))
+      .order("desc")
+      .take(args.limit);
+    return articles;
+  },
+});
+
 export const createNewsArticle = mutation({
   args: {
     title: v.string(),
@@ -56,8 +69,6 @@ export const getArticlesWithAuthors = query({
     const { db } = ctx;
 
     // Fetch articles
-
-    console.log("FATCHING DATA")
     const paginatedArticles = await db.query("newsArticles")
       .order("desc")
       .paginate(args.paginationOpts);
@@ -131,7 +142,7 @@ export const editArticle = mutation({
       throw new Error("You are not the author on this article");
     }
     
-    const updateArticle = await db.patch(articleId, {
+    await db.patch(articleId, {
       ...articleData
     })
 

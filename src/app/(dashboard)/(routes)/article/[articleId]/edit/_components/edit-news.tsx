@@ -112,7 +112,6 @@ export default function EditNews({ userId, article }: editNewsProps) {
 
   const generateUploadUrl = useMutation(api.uploadFile.generateUploadUrl);
   const saveFile = useMutation(api.uploadFile.saveFile);
-  const getUser = useMutation(api.user.getUser);
   const updateNewsArticle = useMutation(api.newsArticle.editArticle)
   const deleteImageStorage = useMutation(api.uploadFile.deleteImageFromStorage)
   const deleteArticle = useMutation(api.newsArticle.deleteArticle)
@@ -199,7 +198,8 @@ export default function EditNews({ userId, article }: editNewsProps) {
         id: toastId,
       });
 
-      const convexUser = await getUser({ clerkId:  userId});
+      const convexUser = await useQuery(api.user.getUser,{ clerkId:  userId});
+      
       if (!convexUser) {
         throw new Error("User not found in Convex database");
       }
