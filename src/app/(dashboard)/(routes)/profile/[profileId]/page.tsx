@@ -41,7 +41,7 @@ export default function ProfilePage () {
           Profile
         </div>
         <div className="border-t-2 w-full " />
-
+        {!userProfile ? <div>Loading...</div> :
         <Card className="w-full p-3 flex flex-col " >
           <div className="flex flex-row">
             <Avatar className="w-20 h-20">
@@ -68,6 +68,8 @@ export default function ProfilePage () {
             
           
         </Card>
+         }
+        
           
         
 
