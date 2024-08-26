@@ -41,12 +41,7 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
 });
 
-const mdParser = new MarkdownIt({
-  html:         true,
-  xhtmlOut:     true,
-  breaks:       true,
-  highlight: function (/*str, lang*/) { return ''; }
-})
+const mdParser = new MarkdownIt()
 .enable(['link'])
 .enable('image');;
 
