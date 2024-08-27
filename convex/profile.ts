@@ -27,8 +27,6 @@ export const getUserProfile =  query({
     .filter((q) => q.eq(q.field('followedId'), user._id))
     .collect()
 
-    countFollowers.length
-
     const votes = await db
     .query("votes")
     .filter((q) => q.eq(q.field('userId'), user._id))

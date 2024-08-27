@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server.js";
 // import { mutationGeneric } from "convex/server";
 import { v } from "convex/values";
+import { Doc } from './_generated/dataModel';
 
 export const createUser = mutation({
   args: {
@@ -70,5 +71,45 @@ export const getProfile  =  query({
       user,
       article,
     };
+  },
+});
+
+export const editUser = mutation({
+  args: {
+    clerkId: v.string(),
+    userCurrentData: v.object({
+      clerkId: v.string(),
+      name: v.string(),
+      email: v.string(),
+      imageUrl: v.string(),
+      bio: v.optional(v.string()), 
+      joinedAt: v.number(),
+    })
+  },
+  handler: async (ctx, args) => {
+    const { userCurrentData, clerkId } = args;
+    const { db } = ctx;
+
+    if(clerkId != userCurrentData.clerkId){
+      throw new Error("You are not the user on this profile");
+    }
+
+    const checkUser = await db
+    .query("users")
+    .filter((q) => q.eq(q.field("clerkId"), clerkId))
+    .unique();
+
+    if(!checkUser){
+      throw new Error("User profile not found");
+    }
+    
+    await db.patch(checkUser._id, {
+      ...userCurrentData
+    })
+
+    return {
+      msg: "Article success update"
+    } 
+
   },
 });
