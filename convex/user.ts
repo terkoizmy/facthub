@@ -49,6 +49,18 @@ export const getUser =  query({
   },
 });
 
+export const getUserConvex =  mutation({
+  args: { clerkId: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    if (!args.clerkId) return null;
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+      .unique();
+    return user;
+  },
+});
+
 export const getProfile  =  query({
   args: { clerkId: v.optional(v.string()) },
   handler: async (ctx, args) => {

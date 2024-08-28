@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { LogOut, BookPlus } from "lucide-react";
 import { SearchInput } from "./search-input";
 import { useUser } from "@clerk/nextjs";
+import { api } from "@/../convex/_generated/api";
+import { useQuery  } from 'convex/react';
 
 
 const DotIcon = () => {
@@ -24,9 +26,23 @@ export const NavbarRoutes = () => {
   const router = useRouter()
   const { user } = useUser()
 
+  if (!user) {
+    return <div>Loading...</div>; // Or handle this case however you like
+  }
+
+  const convexUser = useQuery(api.user.getUser, { clerkId: user.id });
+
+  if (!convexUser) {
+    return <div>Loading...</div>; // Or handle this case however you like
+  }
+
   const isCreateArrticlePage = pathname?.startsWith('/article');
   // const isCoursePage = pathname?.includes("/create");
   const isSearchPage = pathname === "/search";
+
+  const toProfile = (userId: string) => {
+    router.push(`/profile/${userId}`)
+  }
 
   return (
     <>
@@ -58,11 +74,7 @@ export const NavbarRoutes = () => {
             </Link>
           )}
           </>
-        )
-          
-        }
-
-        
+          )}
         
         <Unauthenticated>
           <Button size="sm" variant="ghost" >
@@ -81,7 +93,7 @@ export const NavbarRoutes = () => {
               <UserButton.Action
                 label="Profile"
                 labelIcon={<DotIcon />}
-                onClick={() => router.push('/profile/Me')}
+                onClick={() => toProfile(convexUser._id)}
               />
             </UserButton.MenuItems>
           </UserButton>

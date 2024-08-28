@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function RepliesContent() {
   return (
-    <div>Replies Content</div>
+    <div>Activity Content</div>
   )
 }

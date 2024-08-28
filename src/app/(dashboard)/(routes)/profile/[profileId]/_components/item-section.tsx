@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import BarItem from './bar-item';
 import UpvotedContent from './upvoted-content';
-import RepliesContent from './replies-content';
+import RepliesContent from './activity-content';
 import PostContent from './posts-content';
 import BookmarkContent from './bookmark-content';
 import { api } from '@/../convex/_generated/api';
+import { Doc } from '@/../convex/_generated/dataModel';
 
 const tabs = [
   { name: 'Posts'},
@@ -15,7 +16,7 @@ const tabs = [
 ];
 
 interface ItemSectionProps {
-  userId: string
+  userId: string,
 }
 
 
@@ -29,7 +30,7 @@ export default function ItemSection({ userId } : ItemSectionProps) {
   const renderContent = () => {
     switch (activeTab) {
       case "Posts":
-        return <PostContent/>;
+        return <PostContent userId={userId} />;
       case "Activity":
         return <RepliesContent/>;
       case "Bookmark":
@@ -44,7 +45,6 @@ export default function ItemSection({ userId } : ItemSectionProps) {
       <div className='flex justify-evenly flex-row border-b-2'>
         {tabs.map((route, index)=>(
           <div key={index} className='flex my-1'>
-            {/* {route.name} */}
             <BarItem name={route.name} isActive={activeTab} onClick={onClick} />
           </div>
         )) }

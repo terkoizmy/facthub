@@ -3,15 +3,15 @@ import { mutation, query } from "./_generated/server.js";
 import { v } from "convex/values";
 
 export const getUserProfile =  query({
-  args: { clerkId: v.optional(v.string()) },
+  args: { profileId: v.id("users")},
   handler: async (ctx, args) => {
     const { db, storage} = ctx
-    const { clerkId } = args
+    const { profileId } = args
 
-    if (!clerkId) return {};
+    if (!profileId) return {};
     const user = await db
     .query("users")
-    .filter((q) => q.eq(q.field("clerkId"), clerkId), )
+    .filter((q) => q.eq(q.field("_id"), profileId), )
     .unique();
 
     if (!user) throw new Error("User not found in Convex database"); 
@@ -22,7 +22,7 @@ export const getUserProfile =  query({
     .order("desc")
     .collect()
 
-    const countFollowers  = await db
+    const countFollowers = await db
     .query("follows")
     .filter((q) => q.eq(q.field('followedId'), user._id))
     .collect()

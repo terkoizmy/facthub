@@ -20,9 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-import { useParams, usePathname } from 'next/navigation';
+import {  useParams } from 'next/navigation';
 import { useState } from "react";
-import { editUser } from '../../../../../../convex/user';
 
 
 function formatTimestamp(timestamp: any) {
@@ -34,19 +33,18 @@ function formatTimestamp(timestamp: any) {
 
 export default function ProfilePage () {
   const { user } = useUser()
-  const pathname = usePathname()
-  console.log(pathname)
+  const { profileId } = useParams() 
+  
 
   if (!user) {
     return <div>Loading...</div>; // Or handle this case however you like
   }
 
-  const userProfile = useQuery(api.profile.getUserProfile, { clerkId: user.id })
+  //@ts-ignore
+  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId })
   const updateUser = useMutation(api.user.editUser)
 
   const [bio, setBio] = useState(userProfile?.user?.bio || "");
-
-  console.log(userProfile?.user)
 
   const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(event.target.value);

@@ -98,6 +98,7 @@ export default function CreateNews({ userId }: any) {
   const generateUploadUrl = useMutation(api.uploadFile.generateUploadUrl);
   const saveFile = useMutation(api.uploadFile.saveFile);
   const createNewsArticle = useMutation(api.newsArticle.createNewsArticle);
+  const getUserConvex = useMutation(api.user.getUserConvex)
 
   async function getFileUrl(storageId: string) {
     return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
@@ -107,7 +108,7 @@ export default function CreateNews({ userId }: any) {
     console.log('Saving content:', values);
     
     try {
-      const convexUser = await useQuery(api.user.getUser, { clerkId: userId });
+      const convexUser = await getUserConvex({ clerkId: userId });
       if (!convexUser) {
         throw new Error("User not found in Convex database");
       }

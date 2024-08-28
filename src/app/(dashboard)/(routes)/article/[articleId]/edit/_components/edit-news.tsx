@@ -115,6 +115,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
   const updateNewsArticle = useMutation(api.newsArticle.editArticle)
   const deleteImageStorage = useMutation(api.uploadFile.deleteImageFromStorage)
   const deleteArticle = useMutation(api.newsArticle.deleteArticle)
+  const getUserConvex = useMutation(api.user.getUserConvex)
 
   async function getFileUrl(storageId: string) {
     return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
@@ -198,7 +199,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
         id: toastId,
       });
 
-      const convexUser = await useQuery(api.user.getUser,{ clerkId:  userId});
+      const convexUser = await getUserConvex({ clerkId: userId });
       
       if (!convexUser) {
         throw new Error("User not found in Convex database");
