@@ -17,7 +17,7 @@ function formatTimeAgo(date: any) {
 }
 
 
-function Comment({ comment, onReply }: any) {
+function Comment({ comment, onReply, depth = 0 }: any) {
   const dateTime = new Date(comment._creationTime);
   const [commentTrigger, setCommentTrigger] = useState(false)
   const [newReply, setNewReply] = useState("");
@@ -32,6 +32,7 @@ function Comment({ comment, onReply }: any) {
       });
       setNewReply("");
       onReply(); // Trigger a refetch of comments
+      setCommentTrigger(false)
     }
   };
 
@@ -47,8 +48,16 @@ function Comment({ comment, onReply }: any) {
             <h4 className="font-bold">{comment.author.name}</h4>
             <p>{comment.content}</p>
             <div className='flex flex-row'>
-              <div className='text-sm text-slate-500 flex-nowrap'>{formatTimeAgo(dateTime)}&nbsp;·&nbsp;</div>  
-              {!commentTrigger && <div className='felx text-sm text-slate-400 hover:text-zinc-700 dark:hover:border-gray-600 hover:cursor-pointer' onClick={() => setCommentTrigger(true)}> Reply</div> }
+              <div className='text-sm text-slate-500 flex-nowrap'>{formatTimeAgo(dateTime)}&nbsp;·&nbsp;</div>
+              
+              {depth < 1 && !commentTrigger && (
+                <div 
+                  className='felx text-sm text-slate-400 hover:text-zinc-700 dark:hover:border-gray-600 hover:cursor-pointer' 
+                  onClick={() => setCommentTrigger(true)}
+                > 
+                  Reply
+                </div>
+              )}
             </div>
             
             {commentTrigger &&
@@ -71,7 +80,7 @@ function Comment({ comment, onReply }: any) {
         </div>
         {comment.replies && comment.replies.map((reply: any) => (
           <div key={reply._id} className="ml-12 mt-4">
-            <Comment comment={reply} onReply={onReply} />
+            <Comment comment={reply} onReply={onReply} depth={depth + 1} />
           </div>
         ))}
       </div>
@@ -132,11 +141,12 @@ export default function CommentSection({ articleId }: commentSectionProps) {
             />
             <Button onClick={handleCommentSubmit}>Submit</Button>
           </div>
-          {comments.map((comment: any) => (
+          {comments.map((comment: any, index: any) => (
             <Comment 
               key={comment._id} 
               comment={comment} 
               onReply={() => {}} // You can implement a refetch function if needed
+              index={index}
             />
           ))}
         </CardContent>

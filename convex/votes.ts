@@ -8,20 +8,19 @@ export const upvote = mutation({
     if (!identity) {
       throw new Error("Not authenticated");
     }
-    const userId = await ctx.db
+    const user = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .unique()
-      .then((user) => user?._id);
+      .unique();
 
-    if (!userId) {
+    if (!user) {
       throw new Error("User not found");
     }
 
     const existingVote = await ctx.db
       .query("votes")
       .filter((q) => q.eq(q.field("articleId"), args.articleId))
-      .filter((q) => q.eq(q.field("userId"), userId))
+      .filter((q) => q.eq(q.field("userId"), user._id))
       .unique();
 
     const article = await ctx.db.get(args.articleId);
@@ -32,18 +31,18 @@ export const upvote = mutation({
     if (existingVote) {
       if (existingVote.voteType === "upvote") {
         await ctx.db.delete(existingVote._id);
-        await ctx.db.patch(args.articleId, { upvotes: Math.max(0, article.upvotes - 1) });
+        await ctx.db.patch(args.articleId, { upvotes: article.upvotes - 1 });
       } else {
         await ctx.db.patch(existingVote._id, { voteType: "upvote" });
         await ctx.db.patch(args.articleId, {
           upvotes: article.upvotes + 1,
-          downvotes: Math.max(0, article.downvotes - 1),
+          downvotes: article.downvotes - 1,
         });
       }
     } else {
       await ctx.db.insert("votes", {
         articleId: args.articleId,
-        userId,
+        userId: user._id,
         voteType: "upvote",
       });
       await ctx.db.patch(args.articleId, { upvotes: article.upvotes + 1 });
@@ -58,20 +57,19 @@ export const downvote = mutation({
     if (!identity) {
       throw new Error("Not authenticated");
     }
-    const userId = await ctx.db
+    const user = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .unique()
-      .then((user) => user?._id);
+      .unique();
 
-    if (!userId) {
+    if (!user) {
       throw new Error("User not found");
     }
 
     const existingVote = await ctx.db
       .query("votes")
       .filter((q) => q.eq(q.field("articleId"), args.articleId))
-      .filter((q) => q.eq(q.field("userId"), userId))
+      .filter((q) => q.eq(q.field("userId"), user._id))
       .unique();
 
     const article = await ctx.db.get(args.articleId);
@@ -80,21 +78,21 @@ export const downvote = mutation({
     }
 
     if (existingVote) {
-      if (existingVote.voteType === "downvote") {
+      if (existingVote.voteType === "upvote") {
         await ctx.db.delete(existingVote._id);
-        await ctx.db.patch(args.articleId, { downvotes: Math.max(0, article.downvotes - 1) });
+        await ctx.db.patch(args.articleId, { downvotes: article.downvotes - 1 });
       } else {
-        await ctx.db.patch(existingVote._id, { voteType: "downvote" });
+        await ctx.db.patch(existingVote._id, { voteType: "upvote" });
         await ctx.db.patch(args.articleId, {
+          upvotes: article.upvotes - 1,
           downvotes: article.downvotes + 1,
-          upvotes: Math.max(0, article.upvotes - 1),
         });
       }
     } else {
       await ctx.db.insert("votes", {
         articleId: args.articleId,
-        userId,
-        voteType: "downvote",
+        userId: user._id,
+        voteType: "upvote",
       });
       await ctx.db.patch(args.articleId, { downvotes: article.downvotes + 1 });
     }

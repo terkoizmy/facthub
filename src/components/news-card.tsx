@@ -1,13 +1,12 @@
 "use client"
 
-import { useState } from "react"
-
+import { useState, useEffect  } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Doc } from "@/../convex/_generated/dataModel";
 import { ThumbsUp,ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from "lucide-react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/../convex/_generated/api";
 
 import {
@@ -39,8 +38,11 @@ export const NewsCard = ({
 }: CardNewsProps) => {
   const upvote = useMutation(api.votes.upvote);
   const downvote = useMutation(api.votes.downvote);
+  const toggleBookmark = useMutation(api.bookmarks.toggleBookmark);
+  const isBookmarked = useQuery(api.bookmarks.isBookmarked, { articleId: article._id });
   const [optimisticUpvotes, setOptimisticUpvotes] = useState(0);
   const [optimisticDownvotes, setOptimisticDownvotes] = useState(0);
+  const [optimisticBookmark, setOptimisticBookmark] = useState(false);
 
   const handleUpvote = async (articleId: any) => {
     setOptimisticUpvotes(prev => prev + 1);
@@ -52,14 +54,17 @@ export const NewsCard = ({
     await downvote({ articleId });
   };
 
-  const handleOnClick = () => {
-    console.log("hello world")
-  }
+  const handleToggleBookmark = async (articleId: any) => {
+    setOptimisticBookmark(prev => !prev);
+    const result = await toggleBookmark({ articleId });
+    setOptimisticBookmark(result);
+  };
+
   return (
     <>
       <Card
         id="card-article"
-        className="rounded-lg hover:border-black dark:hover:border-gray-600 hover:cursor-pointer max-h-[800px] h-full relative overflow-hidden"
+        className="rounded-lg max-h-[800px] h-full relative overflow-hidden"
       >
         <CardHeader className="pb-1 mb-1 px-4">
           <div className="flex justify-between">
@@ -76,7 +81,7 @@ export const NewsCard = ({
             <div id="article-read" className="gap-2 hidden">
               <Button
                 className="h-8 px-2 rounded-xl bg-black dark:bg-white"
-                onClick={handleOnClick}
+                // onClick={handleOnClick}
               >
                 <BookmarkPlus className="w-5 h-5 mr-1" />
                 Bookmark
@@ -84,25 +89,32 @@ export const NewsCard = ({
             </div>
           </div>
         </CardHeader>
-        <Link href={`/article/${article._id}`} target="_blank">
-          <CardContent className="px-2 py-0 pb-2 h-[320px] ">
+        <Link href={`/article/${article._id}`} target="_blank" className="hover:border-black dark:hover:border-gray-600 hover:cursor-pointer">
+          <CardContent className="px-2 py-0 pb-2 h-[320px] flex flex-col ">
             <div className="mt-2 font-extrabold text-lg flex overflow-hidden h-[80px] ">
               {article.title} 
             </div>
-            <div className="flex justify-start text-[0.65rem] gap-2 mt-2">
-              {article.tags.map((_, index) =>
-                index < 2 ? (
-                  <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black ">
-                    {`#${_.toLocaleLowerCase()}`}
-                  </span>
-                ) : (
-                  index === article.tags.length - 1 && (
-                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black">{`+${index - 1}`}</span>
+            <div className="flex justify-between text-[1rem] gap-2 mt-2">
+              <div>
+                {article.tags.map((_, index) =>
+                  index < 2 ? (
+                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black ">
+                      {`#${_.toLocaleLowerCase()}`}
+                    </span>
+                  ) : (
+                    index === article.tags.length - 1 && (
+                      <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black ">{`+${index - 1}`}</span>
+                    )
                   )
-                )
-              )}
+                )}
+              </div>
+              <div>
+                <span className=" p-1 rounded-lg px-2 border-[1px] border-black font-bold">
+                  {article.category.toLocaleUpperCase()}
+                </span>
+              </div>
             </div>
-            <div className="mt-2 mx-0 px-0 relative  h-[200px] w-full aspect-video rounded-md overflow-hidden ">
+            <div className="mt-2 mx-0 px-0 relative h-[200px] w-full aspect-video rounded-md overflow-hidden ">
               <Image
                 src={article.thumbnailUrl}
                 alt={"dummy alt"}
@@ -126,8 +138,16 @@ export const NewsCard = ({
               <MessageSquare className="mr-2 h-4 w-4" />
               {article?.commentCount}
             </Button>
-            <Button variant="ghost" size="sm">
-              <Bookmark className="mr-1 h-4 w-4" />
+            <Button 
+              variant={optimisticBookmark ? "secondary" : "ghost"} 
+              size="sm" 
+              onClick={() => handleToggleBookmark(article._id)}
+            >
+              {isBookmarked ? (
+                <BookmarkCheck className="h-4 w-4" />
+              ) : (
+                <Bookmark className="h-4 w-4" />
+              )}
             </Button>
           </div>
 
