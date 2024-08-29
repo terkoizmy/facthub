@@ -7,6 +7,7 @@ import { Doc } from "@/../convex/_generated/dataModel";
 
 import ArticleSection from "./_components/article-section";
 import CommentSection from "./_components/comment-section";
+import { Card } from "@/components/ui/card";
 
 interface Author extends Doc<"users"> {
 }
@@ -32,9 +33,12 @@ export default function PostArticle()  {
   }
 
   return (
-    <main className="flex flex-col justify-center gap-3 p-5 ">
+    <Card>
+      <main className="flex flex-col justify-center gap-3 p-5 ">
         <ArticleSection article={newsArticle} />
-        <CommentSection />
-    </main>
+        <CommentSection articleId={newsArticle._id} />
+      </main>
+    </Card>
+    
   );
 }

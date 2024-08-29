@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button"
 import { ThumbsUp, MessageSquare, Bookmark, Link } from "lucide-react"
 
 interface ArticlesProps{
-  userId: string
+  profileId: string
 }
 
-export default function PostContent({ userId }: ArticlesProps) {
-  // console.log(article)
+export default function PostContent({ profileId }: ArticlesProps) {
+  // console.log(profileId)
   return (
     <div>
       Post Content

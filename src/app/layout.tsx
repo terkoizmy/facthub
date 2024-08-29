@@ -8,6 +8,7 @@ import { ConvexReactClient } from "convex/react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "react-hot-toast";
 
+
 const inter = Inter({ subsets: ["latin"] })
 
 // tolong di ubah pake .env stringya

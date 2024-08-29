@@ -6,31 +6,18 @@ import Link from "next/link";
 import { ModeToggle } from "@/components/button-toggle"
 import { Authenticated, Unauthenticated } from "convex/react";
 import { Button } from "@/components/ui/button"
-import { LogOut, BookPlus } from "lucide-react";
+import { LogOut, BookPlus, CircleUserRound  } from "lucide-react";
 import { SearchInput } from "./search-input";
 import { useUser } from "@clerk/nextjs";
 import { api } from "@/../convex/_generated/api";
 import { useQuery  } from 'convex/react';
 
 
-const DotIcon = () => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-      <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
-    </svg>
-  )
-}
-
 export const NavbarRoutes = () => {
   const pathname = usePathname();
   const router = useRouter()
-  const { user } = useUser()
 
-  if (!user) {
-    return <div>Loading...</div>; // Or handle this case however you like
-  }
-
-  const convexUser = useQuery(api.user.getUser, { clerkId: user.id });
+  const convexUser = useQuery(api.user.getUser);
 
   if (!convexUser) {
     return <div>Loading...</div>; // Or handle this case however you like
@@ -55,7 +42,7 @@ export const NavbarRoutes = () => {
           <ModeToggle />
         </div>
 
-        {user && (
+        {convexUser && (
           <>
           {isCreateArrticlePage  ? (
             <Link href="/">
@@ -92,7 +79,7 @@ export const NavbarRoutes = () => {
             <UserButton.MenuItems>
               <UserButton.Action
                 label="Profile"
-                labelIcon={<DotIcon />}
+                labelIcon={<CircleUserRound />}
                 onClick={() => toProfile(convexUser._id)}
               />
             </UserButton.MenuItems>

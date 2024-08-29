@@ -73,19 +73,27 @@ export const getArticlesWithAuthors = query({
       .order("desc")
       .paginate(args.paginationOpts);
 
-    // Fetch author data for each article
-    const articlesWithAuthors = await Promise.all(
+    // Fetch author data and comment count for each article
+    const articlesWithAuthorsAndCommentCount = await Promise.all(
       paginatedArticles.page.map(async (article) => {
-        const author = await db.get(article.authorId);
+        const [author, commentCount] = await Promise.all([
+          db.get(article.authorId),
+          db.query("comments")
+            .filter((q) => q.eq(q.field("articleId"), article._id))
+            .collect()
+            .then((comments) => comments.length)
+        ]);
+
         return {
           ...article,
           author: author,
+          commentCount: commentCount,
         };
       })
     );
 
     return {
-      page: articlesWithAuthors,
+      page: articlesWithAuthorsAndCommentCount,
       continueCursor: paginatedArticles.continueCursor,
     };
   },
@@ -104,9 +112,7 @@ export const getArticleWithAuthor = query({
     if (!article) {
       return { article: null };
     }
-
     const author = await db.get(article.authorId);
-
     return {
       ...article,
       author

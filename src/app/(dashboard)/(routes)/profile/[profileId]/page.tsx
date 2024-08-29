@@ -7,14 +7,16 @@ import { Avatar, AvatarFallback, AvatarImage, } from "@/components/ui/avatar"
 import { api } from "@/../convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
@@ -34,7 +36,6 @@ function formatTimestamp(timestamp: any) {
 export default function ProfilePage () {
   const { user } = useUser()
   const { profileId } = useParams() 
-  
 
   if (!user) {
     return <div>Loading...</div>; // Or handle this case however you like
@@ -82,7 +83,7 @@ export default function ProfilePage () {
   return (
     
     <div className="h-full w-full flex flex-row  ">
-      <Dialog>
+      <AlertDialog>
         <div className="flex flex-col h-full w-7/12 border-r-2">
           <ItemSection userId={user?.id} />
         </div>
@@ -129,9 +130,9 @@ export default function ProfilePage () {
               }
             
 
-              <DialogTrigger asChild>
+              <AlertDialogTrigger asChild>
                 <Button variant="outline"> <Plus /> Edit your bio</Button>
-              </DialogTrigger>
+              </AlertDialogTrigger>
             </div>
 
             <div className="flex flex-col w-full h-full mt-7">
@@ -158,21 +159,21 @@ export default function ProfilePage () {
           }
 
         </div>
-          <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Edit Bio profile</DialogTitle>
-            <DialogDescription>
+          <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Edit Bio profile</AlertDialogTitle>
+            <AlertDialogDescription>
               Make changes to your bio profile here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
           <div className="grid gap-4 py-4">
             <Textarea placeholder="Type your bio here." value={bio} onChange={handleBioChange} />
           </div>
-          <DialogFooter>
-            <Button type="submit" onClick={() => handleSaveBio({clerkId: user.id, userData: userProfile?.user, bio: bio })}>Save changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction type="submit" onClick={() => handleSaveBio({clerkId: user.id, userData: userProfile?.user, bio: bio })} >Save changes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

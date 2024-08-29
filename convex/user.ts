@@ -38,12 +38,15 @@ export const createUser = mutation({
 });
 
 export const getUser =  query({
-  args: { clerkId: v.optional(v.string()) },
+  args: { },
   handler: async (ctx, args) => {
-    if (!args.clerkId) return null;
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
     const user = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
       .first();
     return user;
   },

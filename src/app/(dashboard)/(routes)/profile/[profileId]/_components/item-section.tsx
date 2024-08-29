@@ -8,6 +8,7 @@ import PostContent from './posts-content';
 import BookmarkContent from './bookmark-content';
 import { api } from '@/../convex/_generated/api';
 import { Doc } from '@/../convex/_generated/dataModel';
+import {  useParams } from 'next/navigation';
 
 const tabs = [
   { name: 'Posts'},
@@ -22,6 +23,7 @@ interface ItemSectionProps {
 
 export default function ItemSection({ userId } : ItemSectionProps) {
   const [activeTab, setActiveTab] = useState("Posts");
+  const { profileId } = useParams()
 
   const onClick = (name: string) => {
     setActiveTab(name)
@@ -30,7 +32,8 @@ export default function ItemSection({ userId } : ItemSectionProps) {
   const renderContent = () => {
     switch (activeTab) {
       case "Posts":
-        return <PostContent userId={userId} />;
+        //@ts-ignore
+        return <PostContent profileId={profileId} />;
       case "Activity":
         return <RepliesContent/>;
       case "Bookmark":
