@@ -33,7 +33,7 @@ export const createNewsArticle = mutation({
     thumbnailUrl: v.string(),
     authorId: v.id("users"),
     tags: v.array(v.string()),
-    category: v.string(),
+    categoryId: v.id("categories"),
   },
   handler: async (ctx, args) => {
     const newsArticleId = await ctx.db.insert("newsArticles", {
@@ -202,7 +202,7 @@ export const editArticle = mutation({
       thumbnailUrl: v.string(),
       authorId: v.id("users"),
       tags: v.array(v.string()),
-      category: v.string(),
+      categoryId: v.id("categories"),
     }) ,
   },
   handler: async (ctx, args) => {
@@ -219,7 +219,7 @@ export const editArticle = mutation({
     }
     
     await db.patch(articleId, {
-      ...articleData
+      ...articleData,
     })
 
     return {

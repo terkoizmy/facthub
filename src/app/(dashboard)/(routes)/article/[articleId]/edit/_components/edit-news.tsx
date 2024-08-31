@@ -35,7 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMutation, useQuery  } from 'convex/react';
 import { api } from '@/../../convex/_generated/api';
 import toast from "react-hot-toast";
-import { Doc } from "@/../convex/_generated/dataModel";
+import { Doc, Id } from "@/../convex/_generated/dataModel";
 
 const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
@@ -55,7 +55,7 @@ const formSchema = z.object({
     html: z.string(),
   }),
   tags: z.array(z.string()).min(1, "At least one tag is required"),
-  category: z.string().min(1, "Category is required"),
+  categoryId: z.string().min(1, "Category is required"),
   image: z
     .optional( // Make the image field optional
       z.custom<FileList>()
@@ -74,7 +74,7 @@ interface editNewsProps {
 }
 
 export default function EditNews({ userId, article }: editNewsProps) {
-  // console.log(article)
+  console.log(article)
   const router = useRouter()
   const [tags, setTags] = useState<string[]>(article.tags || []);
   const [editorContent, setEditorContent] = useState({ text: article.content, html: article.htmlContent });
@@ -88,7 +88,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
       title: article.title,
       content: { text: article.content, html: article.htmlContent },
       tags: article.tags,
-      category: article.category,
+      categoryId: article.categoryId,
     },
   });
 
@@ -116,6 +116,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
   const deleteImageStorage = useMutation(api.uploadFile.deleteImageFromStorage)
   const deleteArticle = useMutation(api.newsArticle.deleteArticle)
   const getUserConvex = useMutation(api.user.getUserConvex)
+  const categoryList = useQuery(api.category.getCategories)
 
   async function getFileUrl(storageId: string) {
     return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
@@ -215,7 +216,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
           thumbnailUrl: fileUrls,
           authorId: article.authorId,
           tags: values.tags,
-          category: values.category,
+          categoryId: values.categoryId as Id<"categories">,
         }
         
       });
@@ -355,7 +356,7 @@ export default function EditNews({ userId, article }: editNewsProps) {
           {/* Category field */}
           <FormField
             control={form.control}
-            name="category"
+            name="categoryId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
@@ -365,13 +366,10 @@ export default function EditNews({ userId, article }: editNewsProps) {
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="technology">Technology</SelectItem>
-                    <SelectItem value="politics">Politics</SelectItem>
-                    <SelectItem value="science">Science</SelectItem>
-                    <SelectItem value="health">Health</SelectItem>
-                    <SelectItem value="entertainment">Entertainment</SelectItem>
-                    <SelectItem value="sports">sports</SelectItem>
+                  <SelectContent className="h-[250px]">
+                    {categoryList?.map((category, index) => (
+                      <SelectItem key={index} value={category._id}>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

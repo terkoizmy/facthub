@@ -19,7 +19,7 @@ export const getUserProfile =  query({
 
     const articlesUser = await db
     .query("newsArticles")
-    .withIndex("authorId", (q) => q.eq("authorId", user._id))
+    .withIndex("by_author", (q) => q.eq("authorId", user._id))
     .order("desc")
     .collect()
 

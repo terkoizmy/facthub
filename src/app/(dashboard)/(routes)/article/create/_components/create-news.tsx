@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMutation, useQuery  } from 'convex/react';
 import { api } from '@/../../convex/_generated/api';
 import toast from "react-hot-toast";
+import { Id } from "@/../convex/_generated/dataModel";
 
 const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
@@ -99,6 +100,7 @@ export default function CreateNews({ userId }: any) {
   const saveFile = useMutation(api.uploadFile.saveFile);
   const createNewsArticle = useMutation(api.newsArticle.createNewsArticle);
   const getUserConvex = useMutation(api.user.getUserConvex)
+  const categoryList = useQuery(api.category.getCategories)
 
   async function getFileUrl(storageId: string) {
     return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
@@ -161,7 +163,7 @@ export default function CreateNews({ userId }: any) {
         thumbnailUrl: fileUrl,
         authorId: convexUser._id,
         tags: values.tags,
-        category: values.category,
+        categoryId: values.category as Id<"categories">,
       });
   
       console.log('News article posted successfully!');
@@ -227,7 +229,7 @@ export default function CreateNews({ userId }: any) {
             )}
           />
 
-<FormField
+          <FormField
             control={form.control}
             name="tags"
             render={({ field }) => {
@@ -304,14 +306,10 @@ export default function CreateNews({ userId }: any) {
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="technology">Technology</SelectItem>
-                    <SelectItem value="politics">Politics</SelectItem>
-                    <SelectItem value="science">Science</SelectItem>
-                    <SelectItem value="health">Health</SelectItem>
-                    <SelectItem value="entertainment">Entertainment</SelectItem>
-                    <SelectItem value="sports">sports</SelectItem>
-                    {/* Add more categories as needed */}
+                  <SelectContent className="h-[250px]">
+                    {categoryList?.map((category, index) => (
+                      <SelectItem value={category._id}>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

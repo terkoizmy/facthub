@@ -10,20 +10,36 @@ export default defineSchema({
     bio: v.optional(v.string()), 
     joinedAt: v.number(), 
   }),
+  
+  categories: defineTable({
+    name: v.string(),
+    description: v.optional(v.string()),
+  }).index("by_name", ["name"]),
+
   newsArticles: defineTable({
     title: v.string(),
     content: v.string(),
     htmlContent: v.string(),
     thumbnailUrl: v.string(),
     authorId: v.id("users"),
+    categoryId: v.id("categories"),
     tags: v.array(v.string()),
-    category: v.string(),
     createdAt: v.number(),
     updatedAt: v.number(),
     upvotes: v.number(),
     downvotes: v.number(),
-    viewCount: v.number(), 
-  }).index('authorId', ['authorId']),
+    viewCount: v.number(),
+  }).index("by_author", ["authorId"])
+    .index("by_category", ["categoryId"])
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["categoryId", "tags"],
+    })
+    .searchIndex("search_content", {
+      searchField: "content",
+      filterFields: ["categoryId", "tags"],
+    }),
+
   comments: defineTable({
     articleId: v.id("newsArticles"),
     authorId: v.id("users"),

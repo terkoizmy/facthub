@@ -15,6 +15,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as bookmarks from "../bookmarks.js";
+import type * as category from "../category.js";
 import type * as clerkWebhook from "../clerkWebhook.js";
 import type * as comments from "../comments.js";
 import type * as http from "../http.js";
@@ -35,6 +36,7 @@ import type * as votes from "../votes.js";
  */
 declare const fullApi: ApiFromModules<{
   bookmarks: typeof bookmarks;
+  category: typeof category;
   clerkWebhook: typeof clerkWebhook;
   comments: typeof comments;
   http: typeof http;
