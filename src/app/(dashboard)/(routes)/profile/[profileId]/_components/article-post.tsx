@@ -19,6 +19,12 @@ import {
 import { BookmarkPlus, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { formatDistanceToNow } from 'date-fns';
+
+function formatTimeAgo(date: any) {
+  const dateNow = new Date(date)
+  return formatDistanceToNow(dateNow, { addSuffix: true });
+}
 
 interface CardNewsProps {
   article: Doc<"newsArticles"> & {
@@ -26,15 +32,16 @@ interface CardNewsProps {
       id: string;
       name: string;
       email: string;
-
       imageUrl: string;
     };
-    commentCount: number
-  }
+    commentCount: number,
+  },
+  type: any
 }
 
-export const NewsCard = ({
-  article
+export const ArticlePost = ({
+  article,
+  type
 }: CardNewsProps) => {
   const upvote = useMutation(api.votes.upvote);
   const downvote = useMutation(api.votes.downvote);
@@ -64,41 +71,51 @@ export const NewsCard = ({
     <>
       <Card
         id="card-article"
-        className="rounded-lg max-h-[800px] h-full  relative overflow-hidden"
+        className="max-w-2xl mx-auto mb-5"
       >
-        <CardHeader className="pb-1 mb-1 px-4">
-          <div className="flex justify-between">
-            <div className="flex flex-row">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={article.author.imageUrl} />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="flex justify-center items-center mx-2">
-                <Label htmlFor="email">{article.author.name}</Label>
+        {type == "bookmark" ? <div> </div> :
+          <CardHeader className="pb-1 mb-1 px-4">
+            <div className="flex justify-between">
+              <div className="flex flex-row">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={article.author.imageUrl} />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div className="flex justify-center items-center mx-2">
+                  <Label htmlFor="email">{article.author.name} 
+                    {<div className='text-sm text-zinc-500 flex-nowrap'>{formatTimeAgo(article?._creationTime)}&nbsp;·&nbsp;</div>}
+                  </Label>
+                </div>
+              </div>
+              
+              <div id="article-read" className="gap-2 hidden">
+                <Button
+                  className="h-8 px-2 rounded-xl bg-black dark:bg-white"
+                  // onClick={handleOnClick}
+                >
+                  <BookmarkPlus className="w-5 h-5 mr-1" />
+                  Bookmark
+                </Button>
               </div>
             </div>
-            
-            <div id="article-read" className="gap-2 hidden">
-              <Button
-                className="h-8 px-2 rounded-xl bg-black dark:bg-white"
-                // onClick={handleOnClick}
-              >
-                <BookmarkPlus className="w-5 h-5 mr-1" />
-                Bookmark
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
+        }
+        
         <Link href={`/article/${article._id}`} target="_blank" className="hover:border-black dark:hover:border-gray-600 hover:cursor-pointer">
-          <CardContent className="px-2 py-0 pb-2 h-[320px] flex flex-col ">
-            <div className="mt-2 font-extrabold text-lg flex overflow-hidden h-[100px] ">
-              {article.title} 
-            </div>
-            <div className="flex justify-between text-[1rem] gap-2 mt-2">
-              <div>
+          <CardContent className="px-2 py-0 pb-2 h-[200px] flex flex-row ">
+            <div className="flex flex-col w-7/12">
+              <div className="mt-2 font-extrabold text-lg flex overflow-hidden min-h-[55px] ">
+                {article.title} 
+              </div>
+              <div className="mt-5 flex ">
+                <span className="font-light text-sm">
+                  cat: {article.category}
+                </span>
+              </div>
+              <div className="flex text-[1rem] gap-2 mt-2 flex-wrap ">
                 {article.tags.map((_, index) =>
-                  index < 2 ? (
-                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black ">
+                  index < 5 ? (
+                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-gray-500 ">
                       {`#${_.toLocaleLowerCase()}`}
                     </span>
                   ) : (
@@ -108,13 +125,9 @@ export const NewsCard = ({
                   )
                 )}
               </div>
-              {/* <div>
-                <span className=" p-1 rounded-lg px-2 border-[1px] border-black font-bold">
-                  {article.category.toLocaleUpperCase()}
-                </span>
-              </div> */}
             </div>
-            <div className="mt-2 mx-0 px-0 relative h-[200px] w-full aspect-video rounded-md overflow-hidden ">
+
+            <div className="mt-2 mx-0 px-0 relative aspect-video rounded-md overflow-hidden flex justify-end w-5/12  ">
               <Image
                 src={article.thumbnailUrl}
                 alt={"dummy alt"}

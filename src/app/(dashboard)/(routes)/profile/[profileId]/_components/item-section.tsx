@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import BarItem from './bar-item';
 import UpvotedContent from './upvoted-content';
-import RepliesContent from './activity-content';
+import ActivityContent from './activity-content';
 import PostContent from './posts-content';
 import BookmarkContent from './bookmark-content';
 import { api } from '@/../convex/_generated/api';
-import { Doc } from '@/../convex/_generated/dataModel';
+import { Doc, Id } from '@/../convex/_generated/dataModel';
 import {  useParams } from 'next/navigation';
 
 const tabs = [
@@ -32,12 +32,11 @@ export default function ItemSection({ userId } : ItemSectionProps) {
   const renderContent = () => {
     switch (activeTab) {
       case "Posts":
-        //@ts-ignore
-        return <PostContent profileId={profileId} />;
+        return <PostContent profileId={profileId as Id<"users">} />;
       case "Activity":
-        return <RepliesContent/>;
+        return <ActivityContent profileId={profileId as Id<"users">}/>;
       case "Bookmark":
-        return <BookmarkContent/>;
+        return <BookmarkContent profileId={profileId as Id<"users">}/>;
       default:
         return null;
     }

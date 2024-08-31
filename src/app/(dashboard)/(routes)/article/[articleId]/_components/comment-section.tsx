@@ -48,7 +48,7 @@ function Comment({ comment, onReply, depth = 0 }: any) {
             <h4 className="font-bold">{comment.author.name}</h4>
             <p>{comment.content}</p>
             <div className='flex flex-row'>
-              <div className='text-sm text-slate-500 flex-nowrap'>{formatTimeAgo(dateTime)}&nbsp;·&nbsp;</div>
+              <div className='text-sm text-zinc-500 flex-nowrap'>{formatTimeAgo(dateTime)}&nbsp;·&nbsp;</div>
               
               {depth < 1 && !commentTrigger && (
                 <div 
@@ -98,7 +98,6 @@ export default function CommentSection({ articleId }: commentSectionProps) {
   const comments = useQuery(api.comments.getArticleComments, { articleId });
   const convexUser = useQuery(api.user.getUser);
   const addCommentMutation = useMutation(api.comments.addComment);
-
   
   const handleCommentSubmit = async () => {
     if (newComment.trim()) {

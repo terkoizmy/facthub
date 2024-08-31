@@ -25,19 +25,6 @@ export const getArticle = query({
   },
 })
 
-// Get user's articles
-const getUserArticles = query({
-  args: { userId: v.id("users"), limit: v.number() },
-  handler: async (ctx, args) => {
-    const articles = await ctx.db
-      .query("newsArticles")
-      .withIndex("authorId", (q) => q.eq("authorId", args.userId))
-      .order("desc")
-      .take(args.limit);
-    return articles;
-  },
-});
-
 export const createNewsArticle = mutation({
   args: {
     title: v.string(),
@@ -95,6 +82,89 @@ export const getArticlesWithAuthors = query({
     return {
       page: articlesWithAuthorsAndCommentCount,
       continueCursor: paginatedArticles.continueCursor,
+    };
+  },
+});
+
+export const getArticlesUser = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    userId: v.id("users")
+  },
+  handler: async (ctx, args) => {
+    const { db } = ctx;
+    const { paginationOpts, userId } = args
+
+    // Fetch articles
+    const paginatedArticles = await db.query("newsArticles")
+      .filter((q) => q.eq(q.field("authorId"), userId))
+      .order("desc")
+      .paginate(paginationOpts);
+
+    // Fetch author data and comment count for each article
+    const articlesWithAuthorsAndCommentCount = await Promise.all(
+      paginatedArticles.page.map(async (article) => {
+        const [author, commentCount] = await Promise.all([
+          db.get(article.authorId),
+          db.query("comments")
+            .filter((q) => q.eq(q.field("articleId"), article._id))
+            .collect()
+            .then((comments) => comments.length)
+        ]);
+
+        return {
+          ...article,
+          author: author,
+          commentCount: commentCount,
+        };
+      })
+    );
+
+    return {
+      page: articlesWithAuthorsAndCommentCount,
+      continueCursor: paginatedArticles.continueCursor,
+    };
+  },
+});
+
+export const getArticlesUserBookmark = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    userId: v.id("users")
+  },
+  handler: async (ctx, args) => {
+    const { db } = ctx;
+    const { paginationOpts, userId } = args
+
+    // Fetch articles
+    const paginatedBookmark = await db.query("bookmarks")
+      .filter((q) =>  q.eq(q.field("userId"), userId))
+      .order("desc")
+      .paginate(paginationOpts);
+
+    // Fetch author data and comment count for each article
+    const bookmarkWithArticlesWithAuthorsAndCommentCount = await Promise.all(
+      paginatedBookmark.page.map(async (bookmark) => {
+        const [article ,author, commentCount] = await Promise.all([
+          db.get(bookmark.articleId),
+          db.get(bookmark.userId),
+          db.query("comments")
+            .filter((q) => q.eq(q.field("articleId"), bookmark.articleId))
+            .collect()
+            .then((comments) => comments.length)
+        ]);
+
+        return {
+          ...article,
+          author: author,
+          commentCount: commentCount,
+        };
+      })
+    );
+
+    return {
+      page: bookmarkWithArticlesWithAuthorsAndCommentCount,
+      continueCursor: paginatedBookmark.continueCursor,
     };
   },
 });

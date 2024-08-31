@@ -134,8 +134,6 @@ export default function ArticleSection( { article } : ArticleSectionProps)  {
             <ReactMarkdown remarkPlugins={[remarkGfm]} >{article?.content}</ReactMarkdown>
           </div>
         </div>
-        
-        
       </Card>
     </>
   );

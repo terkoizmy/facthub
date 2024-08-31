@@ -113,7 +113,7 @@ export default function ProfilePage () {
             </div>
 
             <div className="font-bold flex mt-6">
-              {userProfile?.articlesUser?.length} <div className="text-slate-500"> Posts </div> &nbsp;
+              {userProfile?.countArticle} <div className="text-slate-500"> Posts </div> &nbsp;
               {userProfile?.countFollowers}  <div className="text-slate-500"> Followers </div> &nbsp;
               {userProfile?.upvotes}<div className="text-slate-500"> Upvotes </div> &nbsp;
             </div>

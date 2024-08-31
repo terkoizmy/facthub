@@ -42,7 +42,9 @@ export const getUser =  query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Not authenticated");
+      return {
+        msg: "not login yet"
+      }
     }
     const user = await ctx.db
       .query("users")
