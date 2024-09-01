@@ -35,8 +35,8 @@ export default function PostContent({ profileId }: ArticlesProps) {
   }, [results]);
 
   const handleScroll = useCallback(() => {
-    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || status !== "CanLoadMore") return;
-    loadMore(5);
+    if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight || status !== "CanLoadMore") return;
+    loadMore(3);
   }, [status, loadMore]);
 
   useEffect(() => {
@@ -48,6 +48,7 @@ export default function PostContent({ profileId }: ArticlesProps) {
       {allArticles?.map((articleNews: any, index) => (
         <ArticlePost article={articleNews} key={index || articleNews._id} type={""} />
       ))}
+      
       {status === "LoadingMore" && <div>Loading more...</div>}
     </div>
   )

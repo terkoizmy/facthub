@@ -22,6 +22,7 @@ import type * as http from "../http.js";
 import type * as images from "../images.js";
 import type * as newsArticle from "../newsArticle.js";
 import type * as profile from "../profile.js";
+import type * as search from "../search.js";
 import type * as uploadFile from "../uploadFile.js";
 import type * as user from "../user.js";
 import type * as votes from "../votes.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   images: typeof images;
   newsArticle: typeof newsArticle;
   profile: typeof profile;
+  search: typeof search;
   uploadFile: typeof uploadFile;
   user: typeof user;
   votes: typeof votes;

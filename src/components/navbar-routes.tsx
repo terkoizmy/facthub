@@ -33,7 +33,7 @@ export const NavbarRoutes = () => {
 
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden md:block w-full max-w-[500px]">
         <SearchInput />
       </div>
 
@@ -79,7 +79,8 @@ export const NavbarRoutes = () => {
             <UserButton.MenuItems>
               <UserButton.Action
                 label="Profile"
-                labelIcon={<CircleUserRound />}
+                labelIcon={<CircleUserRound size={"sm"} />}
+                // @ts-ignore
                 onClick={() => toProfile(convexUser._id)}
               />
             </UserButton.MenuItems>

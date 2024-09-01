@@ -120,36 +120,32 @@ export default function CommentSection({ articleId }: commentSectionProps) {
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Comments</h2>
-      <Card>
-        <CardContent>
-          <div className="flex items-center space-x-4 mb-4 mt-2">
-            <Avatar className="w-8 h-8">
-            <AvatarImage src={convexUser?.imageUrl} />
-              <AvatarFallback>You</AvatarFallback>
-            </Avatar>
-            <Input
-              placeholder="Write a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleCommentSubmit();
-                }
-              }}
-            />
-            <Button onClick={handleCommentSubmit}>Submit</Button>
-          </div>
-          {comments.map((comment: any, index: any) => (
-            <Comment 
-              key={comment._id} 
-              comment={comment} 
-              onReply={() => {}} // You can implement a refetch function if needed
-              index={index}
-            />
-          ))}
-        </CardContent>
-      </Card>
+        <div className="flex items-center space-x-4 mb-4 mt-2">
+          <Avatar className="w-8 h-8">
+          <AvatarImage src={convexUser?.imageUrl} />
+            <AvatarFallback>You</AvatarFallback>
+          </Avatar>
+          <Input
+            placeholder="Write a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCommentSubmit();
+              }
+            }}
+          />
+          <Button onClick={handleCommentSubmit}>Submit</Button>
+        </div>
+        {comments.map((comment: any, index: any) => (
+          <Comment 
+            key={comment._id} 
+            comment={comment} 
+            onReply={() => {}} // You can implement a refetch function if needed
+            index={index}
+          />
+        ))}
     </div>
   );
 }

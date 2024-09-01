@@ -98,7 +98,7 @@ export const NewsCard = ({
               <div>
                 {article.tags.map((_, index) =>
                   index < 2 ? (
-                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black ">
+                    <span key={index} className="p-1 rounded-lg px-2 border-[1px] border-black mr-3">
                       {`#${_.toLocaleLowerCase()}`}
                     </span>
                   ) : (

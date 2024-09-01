@@ -33,12 +33,9 @@ export default function PostArticle()  {
   }
 
   return (
-    <Card>
-      <main className="flex flex-col justify-center gap-3 p-5 ">
+      <main className="flex flex-col justify-center gap-3 p-5 min-w-[100px] max-w-[850px] ">
         <ArticleSection article={newsArticle} />
         <CommentSection articleId={newsArticle._id} />
       </main>
-    </Card>
-    
   );
 }

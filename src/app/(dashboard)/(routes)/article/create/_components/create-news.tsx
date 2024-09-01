@@ -49,7 +49,7 @@ const formSchema = z.object({
     text: z.string().min(1, "Content is required"),
     html: z.string(),
   }),
-  tags: z.array(z.string()).min(1, "At least one tag is required"),
+  tags: z.array(z.string().max(10)).min(1, "At least one tag is required"),
   category: z.string().min(1, "Category is required"),
   image: z
     .custom<FileList>()

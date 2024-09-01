@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 import { ThumbsUp,ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/../convex/_generated/api";
+import rehypeRaw from 'rehype-raw'
 
 interface Author extends Doc<"users"> {
 }
@@ -63,7 +64,8 @@ export default function ArticleSection( { article } : ArticleSectionProps)  {
 
   return (
     <>
-      <Card className="flex flex-col  min-w-[100px] max-w-[850px]">
+      
+      <Card className="flex flex-col">
         <div className="flex items-center space-x-4 mx-4 my-4 justify-between">
           <div className="flex items-center">
             <Avatar className="w-10 h-10">

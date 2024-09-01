@@ -107,11 +107,6 @@ export const ArticlePost = ({
               <div className="mt-2 font-extrabold text-lg flex overflow-hidden min-h-[55px] ">
                 {article.title} 
               </div>
-              <div className="mt-5 flex ">
-                <span className="font-light text-sm">
-                  cat: {article.category}
-                </span>
-              </div>
               <div className="flex text-[1rem] gap-2 mt-2 flex-wrap ">
                 {article.tags.map((_, index) =>
                   index < 5 ? (

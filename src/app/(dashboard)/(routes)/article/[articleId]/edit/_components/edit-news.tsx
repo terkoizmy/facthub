@@ -41,7 +41,12 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
 });
 
-const mdParser = new MarkdownIt()
+const mdParser = new MarkdownIt({
+  html:         true,
+  xhtmlOut:     true,
+  breaks:       true,
+  highlight: function (/*str, lang*/) { return ''; }
+})
 .enable(['link'])
 .enable('image');;
 
@@ -54,7 +59,7 @@ const formSchema = z.object({
     text: z.string().min(1, "Content is required"),
     html: z.string(),
   }),
-  tags: z.array(z.string()).min(1, "At least one tag is required"),
+  tags: z.array(z.string().max(10)).min(1, "At least one tag is required"),
   categoryId: z.string().min(1, "Category is required"),
   image: z
     .optional( // Make the image field optional
