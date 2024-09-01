@@ -48,7 +48,7 @@ function Comment({ comment, onReply, depth = 0 }: any) {
             <h4 className="font-bold">{comment.author.name}</h4>
             <p>{comment.content}</p>
             <div className='flex flex-row'>
-              <div className='text-sm text-zinc-500 flex-nowrap'>{formatTimeAgo(dateTime)}&nbsp;·&nbsp;</div>
+              <div className='text-sm text-zinc-500 flex-nowrap'>{`${formatTimeAgo(dateTime)} · `}</div>
               
               {depth < 1 && !commentTrigger && (
                 <div 

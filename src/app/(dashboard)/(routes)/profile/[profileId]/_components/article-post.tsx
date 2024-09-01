@@ -83,7 +83,7 @@ export const ArticlePost = ({
                 </Avatar>
                 <div className="flex justify-center items-center mx-2">
                   <Label htmlFor="email">{article.author.name} 
-                    {<div className='text-sm text-zinc-500 flex-nowrap'>{formatTimeAgo(article?._creationTime)}&nbsp;·&nbsp;</div>}
+                    {<div className='text-sm text-zinc-500 flex-nowrap'>{formatTimeAgo(article?._creationTime)} {` · `}</div>}
                   </Label>
                 </div>
               </div>

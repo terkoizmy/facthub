@@ -308,7 +308,7 @@ export default function CreateNews({ userId }: any) {
                   </FormControl>
                   <SelectContent className="h-[250px]">
                     {categoryList?.map((category, index) => (
-                      <SelectItem value={category._id}>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</SelectItem>
+                      <SelectItem key={index} value={category._id}>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

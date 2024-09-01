@@ -106,18 +106,16 @@ export default function ProfilePage () {
                 <div className="flex flex-wrap">
                   @{ userProfile?.user?.name?.toLowerCase().replace(/\s+/g, '')} 
                   <div className="text-slate-500"> 
-                  &nbsp; • Joined {formatTimestamp(userProfile?.user?._creationTime)}
+                  {` • Joined ${formatTimestamp(userProfile?.user?._creationTime)} `}
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="font-bold flex mt-6">
-              {userProfile?.countArticle} <div className="text-slate-500"> Posts </div> &nbsp;
-              {userProfile?.countFollowers}  <div className="text-slate-500"> Followers </div> &nbsp;
-              {userProfile?.upvotes}<div className="text-slate-500"> Upvotes </div> &nbsp;
+            <div className="font-bold flex mt-6 ">
+              {userProfile?.countArticle} <div className="text-slate-500 mr-2"> Posts </div> 
+              {userProfile?.countFollowers}  <div className="text-slate-500 mr-2"> Followers </div>
+              {userProfile?.upvotes} <div className="text-slate-500"> Upvotes </div>
             </div>
-              
             <div className="flex flex-col w-full h-full justify-center items-center">
               {!userProfile.user?.bio ? 
                 <div className="px-5 flex justify-start mt-5 mb-3 text-slate-500">
