@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react"
 import ItemSection from "./_components/item-section";
 import { Plus, Copy} from 'lucide-react';
@@ -24,8 +23,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 import {  useParams } from 'next/navigation';
-
-import { Id } from "@/../convex/_generated/dataModel";
+import { useState } from "react";
 
 
 function formatTimestamp(timestamp: any) {
@@ -36,34 +34,28 @@ function formatTimestamp(timestamp: any) {
 }
 
 export default function ProfilePage () {
-  const { user } = useUser();
-  const { profileId } = useParams();
-  
-  // Hooks must be called unconditionally
-  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as Id<"users"> });
-  const updateUser = useMutation(api.user.editUser);
-  
-  // Initialize `bio` state unconditionally
-  const [bio, setBio] = useState("");
+  const { user } = useUser()
+  const { profileId } = useParams() 
 
-  // Only after hooks are called, you can handle conditional logic
   if (!user) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Or handle this case however you like
   }
-  
-  // Update `bio` after `userProfile` is available
-  useEffect(() => {
-    if (userProfile?.user?.bio) {
-      setBio(userProfile.user.bio);
-    }
-  }, [userProfile]);
+
+  //@ts-ignore
+  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId })
+  const updateUser = useMutation(api.user.editUser)
+
+  const [bio, setBio] = useState(userProfile?.user?.bio || "");
 
   const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(event.target.value);
   };
 
-  const handleSaveBio = async ({ clerkId, userData, bio }: any) => {
+  const handleSaveBio = async ({ clerkId, userData, bio}: any) => {
     try {
+      // Here you would typically call an API to update the bio
+      // For now, let's just update the local state
+
       await updateUser({
         clerkId: clerkId,
         userCurrentData: {
@@ -73,17 +65,20 @@ export default function ProfilePage () {
           imageUrl: userData.imageUrl,
           bio: bio,
           joinedAt: userData.joinedAt,
-        },
-      });
+        }})
 
       if (userProfile && userProfile.user) {
         userProfile.user.bio = bio;
       }
+      // Close the dialog
+      // You'll need to implement a way to close the dialog, possibly using a state
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
 
+
+    
+  };
 
   return (
     
@@ -111,16 +106,18 @@ export default function ProfilePage () {
                 <div className="flex flex-wrap">
                   @{ userProfile?.user?.name?.toLowerCase().replace(/\s+/g, '')} 
                   <div className="text-slate-500"> 
-                  {` • Joined ${formatTimestamp(userProfile?.user?._creationTime)} `}
+                  &nbsp; • Joined {formatTimestamp(userProfile?.user?._creationTime)}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="font-bold flex mt-6 ">
-              {userProfile?.countArticle} <div className="text-slate-500 mr-2"> Posts </div> 
-              {userProfile?.countFollowers}  <div className="text-slate-500 mr-2"> Followers </div>
-              {userProfile?.upvotes} <div className="text-slate-500"> Upvotes </div>
+
+            <div className="font-bold flex mt-6">
+              {userProfile?.countArticle} <div className="text-slate-500"> Posts </div> &nbsp;
+              {userProfile?.countFollowers}  <div className="text-slate-500"> Followers </div> &nbsp;
+              {userProfile?.upvotes}<div className="text-slate-500"> Upvotes </div> &nbsp;
             </div>
+              
             <div className="flex flex-col w-full h-full justify-center items-center">
               {!userProfile.user?.bio ? 
                 <div className="px-5 flex justify-start mt-5 mb-3 text-slate-500">
