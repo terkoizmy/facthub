@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 import {  useParams } from 'next/navigation';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 function formatTimestamp(timestamp: any) {
@@ -36,6 +36,7 @@ function formatTimestamp(timestamp: any) {
 export default function ProfilePage () {
   const { user } = useUser()
   const { profileId } = useParams() 
+  const [bio, setBio] = useState("");
 
   if (!user) {
     return <div>Loading...</div>; // Or handle this case however you like
@@ -45,7 +46,11 @@ export default function ProfilePage () {
   const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId })
   const updateUser = useMutation(api.user.editUser)
 
-  const [bio, setBio] = useState(userProfile?.user?.bio || "");
+  useEffect(() => {
+    if (userProfile?.user?.bio) {
+      setBio(userProfile.user.bio);
+    }
+  }, [userProfile]);
 
   const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(event.target.value);
@@ -67,10 +72,10 @@ export default function ProfilePage () {
           joinedAt: userData.joinedAt,
         }})
 
-      // if (userProfile && userProfile.user) {
-      //   userProfile.user.bio = bio;
-      // }
-      
+      if (userProfile && userProfile.user) {
+        userProfile.user.bio = bio;
+      }
+
       // Close the dialog
       // You'll need to implement a way to close the dialog, possibly using a state
     } catch (error) {
