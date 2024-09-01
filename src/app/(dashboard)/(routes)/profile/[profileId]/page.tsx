@@ -32,56 +32,14 @@ function formatTimestamp(timestamp: any) {
   return new Intl.DateTimeFormat('en-US', options).format(date);
 }
 
-export default function ProfilePage() {
-  const { user } = useUser()
-  const { profileId } = useParams()
-  const [bio, setBio] = useState("");
-
-  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as Id<"users"> })
-  const updateUser = useMutation(api.user.editUser)
-
-  useEffect(() => {
-    if (userProfile?.user?.bio) {
-      setBio(userProfile.user.bio);
-    }
-  }, [userProfile]);
-
-  const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setBio(event.target.value);
-  };
-
-  const handleSaveBio = async ({ clerkId, userData, bio}: any) => {
-    try {
-      await updateUser({
-        clerkId: clerkId,
-        userCurrentData: {
-          clerkId: userData.clerkId,
-          name: userData.name,
-          email: userData.email,
-          imageUrl: userData.imageUrl,
-          bio: bio,
-          joinedAt: userData.joinedAt,
-        }
-      })
-
-      if (userProfile && userProfile.user) {
-        userProfile.user.bio = bio;
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  };
-
+function ProfilePageContent({ user, profileId, userProfile, updateUser, bio, setBio, handleBioChange, handleSaveBio }: any) {
   if (!user) {
     return <div>Loading...</div>;
   }
 
   return (
-    <>
-    <AlertDialog>
-    
     <div className="h-full w-full flex flex-row">
-      
+      <AlertDialog>
         <div className="flex flex-col h-full w-7/12 border-r-2">
           <ItemSection userId={user?.id} />
         </div>
@@ -167,9 +125,60 @@ export default function ProfilePage() {
             <AlertDialogAction type="submit" onClick={() => handleSaveBio({ clerkId: user.id, userData: userProfile?.user, bio })}>Save changes</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      
+      </AlertDialog>
     </div>
-    </AlertDialog>
-    </>
-  );
+  )
 }
+
+export default function ProfilePage() {
+  const { user } = useUser()
+  const { profileId } = useParams()
+  const [bio, setBio] = useState("");
+
+  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as Id<"users"> })
+  const updateUser = useMutation(api.user.editUser)
+
+  useEffect(() => {
+    if (userProfile?.user?.bio) {
+      setBio(userProfile.user.bio);
+    }
+  }, [userProfile]);
+
+  const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBio(event.target.value);
+  };
+
+  const handleSaveBio = async ({ clerkId, userData, bio}: any) => {
+    try {
+      await updateUser({
+        clerkId: clerkId,
+        userCurrentData: {
+          clerkId: userData.clerkId,
+          name: userData.name,
+          email: userData.email,
+          imageUrl: userData.imageUrl,
+          bio: bio,
+          joinedAt: userData.joinedAt,
+        }
+      })
+
+      if (userProfile && userProfile.user) {
+        userProfile.user.bio = bio;
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  return <ProfilePageContent 
+    user={user}
+    profileId={profileId}
+    userProfile={userProfile}
+    updateUser={updateUser}
+    bio={bio}
+    setBio={setBio}
+    handleBioChange={handleBioChange}
+    handleSaveBio={handleSaveBio}
+  />;
+}
+
