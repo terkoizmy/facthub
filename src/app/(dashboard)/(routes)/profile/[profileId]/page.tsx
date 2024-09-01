@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
+import { Id } from "@/../convex/_generated/dataModel";
 
 function formatTimestamp(timestamp: any) {
   const date = new Date(timestamp);
@@ -37,8 +38,7 @@ export default function ProfilePage() {
   const { profileId } = useParams()
   const [bio, setBio] = useState("");
 
-  // @ts-ignore
-  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as string })
+  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as Id<"users"> })
   const updateUser = useMutation(api.user.editUser)
 
   useEffect(() => {
