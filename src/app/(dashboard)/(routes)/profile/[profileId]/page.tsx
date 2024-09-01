@@ -67,9 +67,10 @@ export default function ProfilePage () {
           joinedAt: userData.joinedAt,
         }})
 
-      if (userProfile && userProfile.user) {
-        userProfile.user.bio = bio;
-      }
+      // if (userProfile && userProfile.user) {
+      //   userProfile.user.bio = bio;
+      // }
+      
       // Close the dialog
       // You'll need to implement a way to close the dialog, possibly using a state
     } catch (error) {
