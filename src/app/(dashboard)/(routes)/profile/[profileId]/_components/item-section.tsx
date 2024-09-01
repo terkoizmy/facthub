@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import BarItem from './bar-item';
-import UpvotedContent from './upvoted-content';
 import ActivityContent from './activity-content';
 import PostContent from './posts-content';
 import BookmarkContent from './bookmark-content';
-import { api } from '@/../convex/_generated/api';
 import { Doc, Id } from '@/../convex/_generated/dataModel';
-import {  useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 const tabs = [
   { name: 'Posts'},
@@ -52,8 +50,8 @@ export default function ItemSection({ userId } : ItemSectionProps) {
         )) }
       </div>
       <div className="p-4">
-          {renderContent()}
-        </div>
+        {renderContent()}
+      </div>
     </div>
   )
 }

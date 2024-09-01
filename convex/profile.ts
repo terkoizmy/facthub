@@ -9,6 +9,7 @@ export const getUserProfile =  query({
     const { db, storage} = ctx
     const { profileId } = args
 
+    if (!profileId) return {};
     const user = await db
     .query("users")
     .filter((q) => q.eq(q.field("_id"), profileId), )
