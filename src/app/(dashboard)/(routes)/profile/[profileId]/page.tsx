@@ -1,5 +1,6 @@
-"use client";
 /* eslint-disable react-hooks/rules-of-hooks */
+"use client";
+
 import { useUser } from "@clerk/clerk-react"
 import ItemSection from "./_components/item-section";
 import { Plus, Copy} from 'lucide-react';
