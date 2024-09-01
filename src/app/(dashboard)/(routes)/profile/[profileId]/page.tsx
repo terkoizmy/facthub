@@ -25,12 +25,12 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect } from "react";
 import { Id } from "@/../convex/_generated/dataModel";
 
-// function formatTimestamp(timestamp: any) {
-//   const date = new Date(timestamp);
-//   const options = { year: 'numeric', month: 'short', day: 'numeric' };
-//   // @ts-ignore
-//   return new Intl.DateTimeFormat('en-US', options).format(date);
-// }
+function formatTimestamp(timestamp: any) {
+  const date = new Date(timestamp);
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  // @ts-ignore
+  return new Intl.DateTimeFormat('en-US', options).format(date);
+}
 
 export default function ProfilePage() {
   const { user } = useUser();
@@ -105,7 +105,7 @@ export default function ProfilePage() {
                   <div className="flex flex-wrap">
                     @{userProfile?.user?.name?.toLowerCase().replace(/\s+/g, '')}
                     <div className="text-slate-500">
-                      {` • Joined ${userProfile?.user?._creationTime}`}
+                      {` • Joined ${formatTimestamp(userProfile?.user?._creationTime)}`}
                     </div>
                   </div>
                 </div>
