@@ -122,7 +122,7 @@ export default function CommentSection({ articleId }: commentSectionProps) {
       <h2 className="text-2xl font-bold mb-4">Comments</h2>
         <div className="flex items-center space-x-4 mb-4 mt-2">
           <Avatar className="w-8 h-8">
-          <AvatarImage src={convexUser?.imageUrl} />
+            {/* <AvatarImage src={convexUser?.imageUrl} /> */}
             <AvatarFallback>You</AvatarFallback>
           </Avatar>
           <Input
