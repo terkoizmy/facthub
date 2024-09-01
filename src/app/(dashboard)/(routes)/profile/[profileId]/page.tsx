@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react"
 import ItemSection from "./_components/item-section";
 import { Plus, Copy} from 'lucide-react';
@@ -23,7 +24,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 import {  useParams } from 'next/navigation';
-import { useState } from "react";
+
+import { Id } from "@/../convex/_generated/dataModel";
 
 
 function formatTimestamp(timestamp: any) {
@@ -34,28 +36,34 @@ function formatTimestamp(timestamp: any) {
 }
 
 export default function ProfilePage () {
-  const { user } = useUser()
-  const { profileId } = useParams() 
+  const { user } = useUser();
+  const { profileId } = useParams();
+  
+  // Hooks must be called unconditionally
+  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as Id<"users"> });
+  const updateUser = useMutation(api.user.editUser);
+  
+  // Initialize `bio` state unconditionally
+  const [bio, setBio] = useState("");
 
+  // Only after hooks are called, you can handle conditional logic
   if (!user) {
-    return <div>Loading...</div>; // Or handle this case however you like
+    return <div>Loading...</div>;
   }
-
-  //@ts-ignore
-  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId })
-  const updateUser = useMutation(api.user.editUser)
-
-  const [bio, setBio] = useState(userProfile?.user?.bio || "");
+  
+  // Update `bio` after `userProfile` is available
+  useEffect(() => {
+    if (userProfile?.user?.bio) {
+      setBio(userProfile.user.bio);
+    }
+  }, [userProfile]);
 
   const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(event.target.value);
   };
 
-  const handleSaveBio = async ({ clerkId, userData, bio}: any) => {
+  const handleSaveBio = async ({ clerkId, userData, bio }: any) => {
     try {
-      // Here you would typically call an API to update the bio
-      // For now, let's just update the local state
-
       await updateUser({
         clerkId: clerkId,
         userCurrentData: {
@@ -65,20 +73,17 @@ export default function ProfilePage () {
           imageUrl: userData.imageUrl,
           bio: bio,
           joinedAt: userData.joinedAt,
-        }})
+        },
+      });
 
       if (userProfile && userProfile.user) {
         userProfile.user.bio = bio;
       }
-      // Close the dialog
-      // You'll need to implement a way to close the dialog, possibly using a state
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
-
-    
   };
+
 
   return (
     
