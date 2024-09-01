@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import dynamic from 'next/dynamic';
-import { Button } from '@/components/ui/button';
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import dynamic from "next/dynamic"
+import { Button } from "@/components/ui/button"
 // @ts-ignore
-import MarkdownIt from 'markdown-it';
-import 'react-markdown-editor-lite/lib/index.css';
-import { useState, useCallback, useRef } from 'react';
-import { useRouter } from "next/navigation";
-import { Input } from '@/components/ui/input';
+import MarkdownIt from "markdown-it"
+import "react-markdown-editor-lite/lib/index.css"
+import { useState, useCallback, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -18,30 +18,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+} from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-import { useMutation, useQuery  } from 'convex/react';
-import { api } from '@/../../convex/_generated/api';
-import toast from "react-hot-toast";
-import { Id } from "@/../convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react"
+import { api } from "@/../../convex/_generated/api"
+import toast from "react-hot-toast"
+import { Id } from "@/../convex/_generated/dataModel"
 
-const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
+const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {
   ssr: false,
-});
-
+})
 
 const mdParser = new MarkdownIt({
-  html:         true,
-  xhtmlOut:     true,
-  breaks:       true,
-  highlight: function (/*str, lang*/) { return ''; }
+  html: true,
+  xhtmlOut: true,
+  breaks: true,
+  highlight: function (/*str, lang*/) {
+    return ""
+  },
 })
-.enable(['link'])
-.enable('image');;
+  .enable(["link"])
+  .enable("image")
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+]
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title is too long"),
@@ -54,19 +66,22 @@ const formSchema = z.object({
   image: z
     .custom<FileList>()
     .refine((files) => files?.length == 1, "Image is required.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .refine(
+      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+      `Max file size is 5MB.`
+    )
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
-});
+})
 
 export default function CreateNews({ userId }: any) {
   const router = useRouter()
-  const [tags, setTags] = useState<string[]>([]);
-  const [editorContent, setEditorContent] = useState({ text: '', html: '' });
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tags, setTags] = useState<string[]>([])
+  const [editorContent, setEditorContent] = useState({ text: "", html: "" })
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,56 +91,59 @@ export default function CreateNews({ userId }: any) {
       tags: [],
       category: "",
     },
-  });
+  })
 
-  const handleEditorChange = useCallback(({ html, text }: { html: string, text: string }) => {
-    setEditorContent({ html, text });
-    form.setValue("content", { text, html });
-  }, [form]);
+  const handleEditorChange = useCallback(
+    ({ html, text }: { html: string; text: string }) => {
+      setEditorContent({ html, text })
+      form.setValue("content", { text, html })
+    },
+    [form]
+  )
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     } else {
-      setImagePreview(null);
+      setImagePreview(null)
     }
-  };
+  }
 
-  const generateUploadUrl = useMutation(api.uploadFile.generateUploadUrl);
-  const saveFile = useMutation(api.uploadFile.saveFile);
-  const createNewsArticle = useMutation(api.newsArticle.createNewsArticle);
+  const generateUploadUrl = useMutation(api.uploadFile.generateUploadUrl)
+  const saveFile = useMutation(api.uploadFile.saveFile)
+  const createNewsArticle = useMutation(api.newsArticle.createNewsArticle)
   const getUserConvex = useMutation(api.user.getUserConvex)
   const categoryList = useQuery(api.category.getCategories)
 
   async function getFileUrl(storageId: string) {
-    return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`;
+    return `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage?storageId=${storageId}`
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('Saving content:', values);
-    
+    console.log("Saving content:", values)
+
     try {
-      const convexUser = await getUserConvex({ clerkId: userId });
+      const convexUser = await getUserConvex({ clerkId: userId })
       if (!convexUser) {
-        throw new Error("User not found in Convex database");
+        throw new Error("User not found in Convex database")
       }
 
-      const toastId = toast.loading('Loading...');
+      const toastId = toast.loading("Loading...")
       // Upload image
-      const file = values.image[0];
-      
-      toast.loading('Uploading file...', {
+      const file = values.image[0]
+
+      toast.loading("Uploading file...", {
         id: toastId,
-      });
-  
+      })
+
       // Get upload URL
-      const uploadUrl = await generateUploadUrl();
-  
+      const uploadUrl = await generateUploadUrl()
+
       // Upload file
       const result = await fetch(uploadUrl, {
         method: "POST",
@@ -133,29 +151,29 @@ export default function CreateNews({ userId }: any) {
           "Content-Type": file.type,
         },
         body: file,
-      });
-  
-      if (!result.ok) {
-        throw new Error(`Upload failed with status ${result.status}`);
-      }     
+      })
 
-      const { storageId } = await result.json();
-      console.log("Storage Id:", storageId);
-  
+      if (!result.ok) {
+        throw new Error(`Upload failed with status ${result.status}`)
+      }
+
+      const { storageId } = await result.json()
+      console.log("Storage Id:", storageId)
+
       // Save file reference
-      await saveFile({ storageId });
-  
+      await saveFile({ storageId })
+
       // Get file URL
-      const fileUrl = await getFileUrl(storageId);
-      console.log("fileUrl:", fileUrl);
-      
+      const fileUrl = await getFileUrl(storageId)
+      console.log("fileUrl:", fileUrl)
+
       // Create news article
-      toast.loading('Creating News', {
+      toast.loading("Creating News", {
         id: toastId,
-      });
+      })
 
       console.log("Upload berhasil")
-      
+
       const newArticle = await createNewsArticle({
         title: values.title,
         content: values.content.text,
@@ -164,22 +182,22 @@ export default function CreateNews({ userId }: any) {
         authorId: convexUser._id,
         tags: values.tags,
         categoryId: values.category as Id<"categories">,
-      });
-  
-      console.log('News article posted successfully!');
-      toast.success('Successfully Created News Article', {
+      })
+
+      console.log("News article posted successfully!")
+      toast.success("Successfully Created News Article", {
         id: toastId,
-      });
+      })
 
       console.log(newArticle)
 
       router.push(`/article/${newArticle}`)
-      
+
       // Reset form or navigate to another page
     } catch (err) {
-      console.error('Error posting news:', err);
-      toast.remove();
-      toast.error('Error creating news article')
+      console.error("Error posting news:", err)
+      toast.remove()
+      toast.error("Error creating news article")
     }
   }
 
@@ -198,8 +216,8 @@ export default function CreateNews({ userId }: any) {
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
-                      handleImageChange(e);
-                      onChange(e.target.files);
+                      handleImageChange(e)
+                      onChange(e.target.files)
                     }}
                     // ref={fileInputRef}
                     {...rest}
@@ -208,7 +226,11 @@ export default function CreateNews({ userId }: any) {
                 <FormMessage />
                 {imagePreview && (
                   <div className="mt-2">
-                    <img src={imagePreview} alt="Preview" className="max-w-xs h-auto" />
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-w-xs h-auto"
+                    />
                   </div>
                 )}
               </FormItem>
@@ -222,7 +244,10 @@ export default function CreateNews({ userId }: any) {
               <FormItem>
                 <FormLabel>Title Post</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. 'Japan Lifts Megathrust Earth...'" {...field} />
+                  <Input
+                    placeholder="e.g. 'Japan Lifts Megathrust Earth...'"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -234,14 +259,14 @@ export default function CreateNews({ userId }: any) {
             name="tags"
             render={({ field }) => {
               const addTag = (inputElement: HTMLInputElement) => {
-                const newTag = inputElement.value.trim();
+                const newTag = inputElement.value.trim()
                 if (newTag && !tags.includes(newTag)) {
-                  const newTags = [...tags, newTag];
-                  setTags(newTags);
-                  field.onChange(newTags);
-                  inputElement.value = '';
+                  const newTags = [...tags, newTag]
+                  setTags(newTags)
+                  field.onChange(newTags)
+                  inputElement.value = ""
                 }
-              };
+              }
 
               return (
                 <FormItem>
@@ -252,17 +277,19 @@ export default function CreateNews({ userId }: any) {
                         <Input
                           placeholder="Add a tag"
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              addTag(e.currentTarget);
+                            if (e.key === "Enter") {
+                              e.preventDefault()
+                              addTag(e.currentTarget)
                             }
                           }}
                         />
-                        <Button 
-                          type="button" 
+                        <Button
+                          type="button"
                           onClick={() => {
-                            const input = document.querySelector('input[placeholder="Add a tag"]') as HTMLInputElement;
-                            if (input) addTag(input);
+                            const input = document.querySelector(
+                              'input[placeholder="Add a tag"]'
+                            ) as HTMLInputElement
+                            if (input) addTag(input)
                           }}
                         >
                           Add Tag
@@ -270,14 +297,19 @@ export default function CreateNews({ userId }: any) {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {tags.map((tag, index) => (
-                          <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          <span
+                            key={index}
+                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                          >
                             {tag}
                             <button
                               type="button"
                               onClick={() => {
-                                const newTags = tags.filter((_, i) => i !== index);
-                                setTags(newTags);
-                                field.onChange(newTags);
+                                const newTags = tags.filter(
+                                  (_, i) => i !== index
+                                )
+                                setTags(newTags)
+                                field.onChange(newTags)
                               }}
                               className="ml-2 text-red-500"
                             >
@@ -290,7 +322,7 @@ export default function CreateNews({ userId }: any) {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              );
+              )
             }}
           />
 
@@ -300,7 +332,10 @@ export default function CreateNews({ userId }: any) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
@@ -308,7 +343,10 @@ export default function CreateNews({ userId }: any) {
                   </FormControl>
                   <SelectContent className="h-[250px]">
                     {categoryList?.map((category, index) => (
-                      <SelectItem value={category._id}>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</SelectItem>
+                      <SelectItem value={category._id}>
+                        {category.name.charAt(0).toUpperCase() +
+                          category.name.slice(1)}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -316,7 +354,7 @@ export default function CreateNews({ userId }: any) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="content"
@@ -325,8 +363,8 @@ export default function CreateNews({ userId }: any) {
                 <FormLabel>Werite your article</FormLabel>
                 <FormControl>
                   <MdEditor
-                    style={{ height: '550px'}} 
-                    renderHTML={text => mdParser.render(text)} 
+                    style={{ height: "550px" }}
+                    renderHTML={(text) => mdParser.render(text)}
                     onChange={handleEditorChange}
                     // value={editorContent}
                   />
@@ -335,10 +373,10 @@ export default function CreateNews({ userId }: any) {
               </FormItem>
             )}
           />
-          
+
           <Button type="submit">Post</Button>
         </form>
       </Form>
     </div>
-  );
+  )
 }
