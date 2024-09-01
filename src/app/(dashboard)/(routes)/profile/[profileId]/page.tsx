@@ -22,9 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-import {  useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
-
 
 function formatTimestamp(timestamp: any) {
   const date = new Date(timestamp);
@@ -33,17 +32,13 @@ function formatTimestamp(timestamp: any) {
   return new Intl.DateTimeFormat('en-US', options).format(date);
 }
 
-export default function ProfilePage () {
+export default function ProfilePage() {
   const { user } = useUser()
-  const { profileId } = useParams() 
+  const { profileId } = useParams()
   const [bio, setBio] = useState("");
 
-  if (!user) {
-    return <div>Loading...</div>; // Or handle this case however you like
-  }
-
-  //@ts-ignore
-  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId })
+  // @ts-ignore
+  const userProfile = useQuery(api.profile.getUserProfile, { profileId: profileId as string })
   const updateUser = useMutation(api.user.editUser)
 
   useEffect(() => {
@@ -58,9 +53,6 @@ export default function ProfilePage () {
 
   const handleSaveBio = async ({ clerkId, userData, bio}: any) => {
     try {
-      // Here you would typically call an API to update the bio
-      // For now, let's just update the local state
-
       await updateUser({
         clerkId: clerkId,
         userCurrentData: {
@@ -70,21 +62,20 @@ export default function ProfilePage () {
           imageUrl: userData.imageUrl,
           bio: bio,
           joinedAt: userData.joinedAt,
-        }})
+        }
+      })
 
       if (userProfile && userProfile.user) {
         userProfile.user.bio = bio;
       }
-
-      // Close the dialog
-      // You'll need to implement a way to close the dialog, possibly using a state
     } catch (error) {
       console.log(error)
     }
-
-
-    
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     
