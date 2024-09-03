@@ -80,7 +80,10 @@ export default function ArticleSection( { article } : ArticleSectionProps)  {
                   </div>
                 </Link>
                 <div className="hover:border-black dark:hover:border-gray-600 hover:cursor-pointer hover:text-slate-500">
-                  {user?.id !== article.author.clerkId &&  ` · Follow`}
+                  {user?.id !== article.author.clerkId }
+                  <div>
+                   · Follow
+                  </div>
                 </div>
                 </h3>
               <div>

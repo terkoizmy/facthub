@@ -78,11 +78,11 @@ export const downvote = mutation({
     }
 
     if (existingVote) {
-      if (existingVote.voteType === "upvote") {
+      if (existingVote.voteType === "downvote") {
         await ctx.db.delete(existingVote._id);
         await ctx.db.patch(args.articleId, { downvotes: article.downvotes - 1 });
       } else {
-        await ctx.db.patch(existingVote._id, { voteType: "upvote" });
+        await ctx.db.patch(existingVote._id, { voteType: "downvote" });
         await ctx.db.patch(args.articleId, {
           upvotes: article.upvotes - 1,
           downvotes: article.downvotes + 1,
@@ -92,7 +92,7 @@ export const downvote = mutation({
       await ctx.db.insert("votes", {
         articleId: args.articleId,
         userId: user._id,
-        voteType: "upvote",
+        voteType: "downvote",
       });
       await ctx.db.patch(args.articleId, { downvotes: article.downvotes + 1 });
     }
